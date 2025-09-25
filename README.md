@@ -63,6 +63,8 @@ It can be hard to find county level data by FIPS code for every year. Due to lim
    * High school graduates (%): 2017 → `hs_grad_2017`
    * Bachelor’s degree (%): 2017 → `bachelors_2017`
    * Veterans (%): 2017 → `veterans_2017`
+ * Insurance
+   * Uninsured (%) → `uninsured_2017`
 
 ## 🛠️ Data wrangling
 * Joining life expectancy to counties:
