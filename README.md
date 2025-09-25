@@ -40,6 +40,30 @@ This app combines data from multiple sources:
 * County name/FIPS crosswalk: [Kieran Healy’s FIPS master](https://github.com/kjhealy/fips-codes) --> state_and_county_fips_master.csv or local fips_crosswalk.csv.
 * Geometries: [us-atlas TopoJSON](https://github.com/topojson/us-atlas) (states-10m, counties-10m).
 
+## 🗓️ Data Years 
+It can be hard to find county level data by FIPS code for every year. Due to limitations on the available data, different data points come from slightly different years:
+* **Life Expectancy** → covers 2010-2015
+* **Presidential Elections** → 2016, 2020
+* **Demographics**
+ * Income/Employment
+   * Per capita income: 2017 → `per_capita_income_2017`
+   * Median household income: 2016 `median_household_income_2016`
+   * Federal spending: 2009 → `fed_spending_2009`
+   * Below Federal Poverty Line (%): 2017 → `poverty_2017`
+   * Unemployment rate (%): 2017 → `unemployment_rate_2017`
+ * Population/density
+   * Population density: 2010 `pop_density_2010`
+   * Population: 2017 → `pop2017`
+ * Age/births
+   * Median age: 2017 → `median_age_2017`
+   * Age over 65 (%): 2017 → `age_over_65_2017`
+   * Age under 5 (%): 2017 → `age_under_5_2017`
+   * Women 16–50 birth rate: 2017 `women_16_to_50_birth_rate_2017`
+ * Education
+   * High school graduates (%): 2017 → `hs_grad_2017`
+   * Bachelor’s degree (%): 2017 → `bachelors_2017`
+   * Veterans (%): 2017 → `veterans_2017`
+
 ## 🛠️ Data wrangling
 * Joining life expectancy to counties:
   * Use FIPS-keyed map (county_life_expectancy_by_fips.json) if present or derive from name-keyed CDC county data: normalize county/state strings (strip accents, convert “St.”→“Saint”, remove “County/Parish/City & Borough/Census Area/Municipality” suffixes, collapse whitespace) and join via crosswalk → FIPS.
