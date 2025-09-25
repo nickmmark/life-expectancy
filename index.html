@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
   <meta
     name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+    content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
   />
   <title>US Life Expectancy Map (CDC 2010–2015)</title>
   <link rel="icon" href="data:,">
@@ -21,11 +21,13 @@
       font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
       background:var(--bg);color:var(--fg);
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      overflow-x:hidden; /* prevent horizontal drift on iOS */
     }
     header{
       position:sticky;top:0;z-index:10;
       display:flex;align-items:center;justify-content:space-between;
-      gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);
+      gap:12px;padding:calc(12px + env(safe-area-inset-top)) 16px 12px 16px; /* safe area for notch */
+      border-bottom:1px solid var(--border);
       background:linear-gradient(180deg, rgba(16,23,53,.96), rgba(16,23,53,.88));
       backdrop-filter: blur(6px);
     }
@@ -43,9 +45,11 @@
     }
     .panel{
       background:var(--card);border:1px solid var(--border);
-      border-radius:16px; padding:12px
+      border-radius:16px; padding:12px; overflow:hidden; /* avoid overflow during reflows */
     }
-    #map{min-height:420px; display:flex; align-items:center; justify-content:center; position:relative}
+    #map{min-height:420px; display:flex; align-items:center; justify-content:center; position:relative; width:100%}
+    #map svg{ width:100%; height:auto; display:block; } /* responsive SVG */
+
     .tip{
       position:absolute; pointer-events:none; background:#0c1530; border:1px solid var(--border);
       padding:8px 10px; border-radius:10px; font-size:12px; color:var(--fg); opacity:0; transform:translate(-50%,-120%);
@@ -76,9 +80,7 @@
       border-radius:10px; cursor:pointer; font-size:14px;
       display:flex; align-items:center; justify-content:space-between;
     }
-    .settings-content{
-      margin-top:10px; display:none;
-    }
+    .settings-content{ margin-top:10px; display:none; }
     .settings-content.show{ display:block; }
     .row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:6px 0 }
     .row label{ font-size:12px; color:var(--muted) }
@@ -91,6 +93,7 @@
       padding:8px 12px;border-radius:999px;border:1px solid var(--border);
       font-size:13px;cursor:pointer;touch-action:manipulation
     }
+    .hidden{ display:none !important; }
 
     /* Mobile-first tweaks */
     @media (max-width: 900px){
@@ -121,21 +124,21 @@
       </label>
       <label id="xVarWrap" class="hidden">X variable
         <select id="xVar" aria-label="Scatterplot X variable">
-          <option value="pcIncome">Per capita income ($)</option>
-          <option value="mhi2016">Median household income ($)</option>
-          <option value="medAge">Median age (yrs)</option>
-          <option value="pct65">Over 65 to (%)</option>
-          <option value="pctUnder5">Under 5 yo (%)</option>
-          <option value="birthRate2017">Birth rate 16–50 </option>
-          <option value="hsGrad">HS graduates (%)</option>
-          <option value="pctBach">Bachelor’s degree (%)</option>
-          <option value="pctVets">Veterans (%)</option>
-          <option value="poverty">Below Poverty Line (%)</option>
-          <option value="unemp">Unemployment (%)</option>
-          <option value="density2010">Population density </option>
-          <option value="fedSpending2009">Federal spending $</option>
-          <option value="e2016_margin">2016 election margin (R–D, %)</option>
-          <option value="e2020_margin">2020 election margin (R–D, %)</option>
+          <option value="pcIncome">Per capita income</option>
+          <option value="medAge">Median age</option>
+          <option value="pct65">Age 65+ %</option>
+          <option value="pctUnder5">Under 5 %</option>
+          <option value="hsGrad">HS graduates %</option>
+          <option value="pctBach">Bachelor’s %</option>
+          <option value="pctVets">Veterans %</option>
+          <option value="poverty">Poverty %</option>
+          <option value="unemp">Unemployment %</option>
+          <option value="mhi2016">Median household income (2016)</option>
+          <option value="density2010">Population density (2010)</option>
+          <option value="birthRate2017">Birth rate 16–50 (2017)</option>
+          <option value="fedSpending2009">Federal spending (2009)</option>
+          <option value="e2016_margin">2016 election margin (R–D, pp)</option>
+          <option value="e2020_margin">2020 election margin (R–D, pp)</option>
         </select>
       </label>
     </div>
@@ -240,15 +243,15 @@
     const NAME_TO_FIPS2 = Object.fromEntries(Object.entries(FIPS_TO_NAME).map(([k,v]) => [v, k]));
     const ALL_STATE_NAMES = Object.values(FIPS_TO_NAME).filter(n => n !== "Puerto Rico").sort();
 
-    function containerWidth(){
-      const wrap = document.querySelector(".panel #map");
-      const rect = wrap ? wrap.getBoundingClientRect() : null;
-      const pad = 0;
-      return Math.min(1100, Math.max(320, (rect ? rect.width : window.innerWidth) - pad));
+    // Responsive sizing helpers (iOS-proof)
+    function getMapWidth() {
+      const el = document.getElementById('map');
+      const w = el?.clientWidth || document.documentElement.clientWidth || 360;
+      return Math.max(320, Math.min(1100, Math.round(w)));
     }
-
-    let WIDTH = containerWidth();
+    let WIDTH = getMapWidth();
     let HEIGHT = Math.round(WIDTH * 0.62);
+    let ro; // ResizeObserver
 
     // UI refs
     const tip = document.getElementById('tooltip');
@@ -366,7 +369,7 @@
     function drawLegend(){
       const min = +minEl.value, max = +maxEl.value;
       const node = document.getElementById('legend');
-      const w = node.clientWidth || 600;
+      const w = node.getBoundingClientRect().width || 600; // reliable on iOS
       const h = node.clientHeight || 56;
       const margin = {left:40,right:40,top:6,bottom:20};
       const innerW = w - margin.left - margin.right;
@@ -402,14 +405,15 @@
       return entries;
     }
     function populateCountyDropdown(stateName){
-      countySelect.innerHTML = '<option value="">—</option>';
+      const sel = document.getElementById('countySelect');
+      sel.innerHTML = '<option value="">—</option>';
       if(!stateName){ return; }
       const list = buildStateCountyList(stateName);
       for(const item of list){
         const opt = document.createElement('option');
         opt.value = item.fips;
         opt.textContent = `${item.county} (${item.value})`;
-        countySelect.appendChild(opt);
+        sel.appendChild(opt);
       }
     }
     function selectStateInSidebar(stateName){
@@ -584,10 +588,7 @@
           }
         } else if(colDiff && row[colDiff] != null && row[colDiff] !== ""){
           let m = +row[colDiff];
-          if(Number.isFinite(m)){
-            if(Math.abs(m) <= 1) m *= 100;
-            marginPP = m;
-          }
+          if(Number.isFinite(m)){ if(Math.abs(m) <= 1) m *= 100; marginPP = m; }
         }
         if(Number.isFinite(marginPP)) out.set(f5, marginPP);
       });
@@ -654,19 +655,37 @@
       return lines.join("<br/>");
     }
 
-    // ---------- Size / responsiveness ----------
-    function containerRebuild(){
-      WIDTH = containerWidth(); HEIGHT = Math.round(WIDTH * 0.62);
-      if(svgRoot) svgRoot.remove();
-      projection = d3.geoAlbersUsa().fitSize([WIDTH, HEIGHT], statesTopo || {type:"FeatureCollection", features:[]});
+    // ---------- Build / rebuild visualization responsively ----------
+    function rebuildVis() {
+      WIDTH  = getMapWidth();
+      HEIGHT = Math.round(WIDTH * 0.62);
+
+      // Rebuild projection + SVG with a responsive viewBox
+      if (svgRoot) svgRoot.remove();
+      projection = d3.geoAlbersUsa().fitSize([WIDTH, HEIGHT], statesTopo || {type:"FeatureCollection",features:[]});
       path = d3.geoPath(projection);
-      svgRoot = d3.select("#map").append("svg").attr("width", WIDTH).attr("height", HEIGHT);
-      if(currentLevel==='state') drawStates(statesTopo);
-      else if(currentLevel==='county') drawCounties(countiesTopo);
-      else drawScatter(false);
+
+      svgRoot = d3.select("#map")
+        .append("svg")
+        .attr("viewBox", `0 0 ${WIDTH} ${HEIGHT}`)
+        .attr("preserveAspectRatio", "xMidYMid meet");
+
+      if (currentLevel === 'state')      drawStates(statesTopo);
+      else if (currentLevel === 'county') drawCounties(countiesTopo);
+      else                                drawScatter(false);
+
       drawLegend();
     }
-    window.addEventListener('resize', () => { containerRebuild(); });
+    function installResizeObserver() {
+      const el = document.getElementById('map');
+      if (!el) return;
+      if (ro) ro.disconnect();
+      ro = new ResizeObserver(() => {
+        cancelAnimationFrame(installResizeObserver._raf);
+        installResizeObserver._raf = requestAnimationFrame(rebuildVis);
+      });
+      ro.observe(el);
+    }
 
     // ---------- Main init ----------
     async function init(){
@@ -720,13 +739,9 @@
         statesTopo = topojson.feature(usStates, usStates.objects.states);
         countiesTopo = topojson.feature(usCounties, usCounties.objects.counties);
 
-        projection = d3.geoAlbersUsa().fitSize([WIDTH, HEIGHT], statesTopo);
-        path = d3.geoPath(projection);
-
+        // Color scale
         setColorScaleDomainAuto();
         colorScale = d3.scaleSequential().domain([+minEl.value, +maxEl.value]).interpolator(makePalette(palEl.value));
-
-        svgRoot = d3.select("#map").append("svg").attr("width", WIDTH).attr("height", HEIGHT);
 
         // Populate state filter (in settings)
         ALL_STATE_NAMES.forEach(s => {
@@ -736,9 +751,9 @@
           stateFilter.appendChild(opt);
         });
 
-        // Draw initial
-        drawStates(statesTopo);
-        drawLegend();
+        // Build the first time & install ResizeObserver (iOS-friendly)
+        rebuildVis();
+        installResizeObserver();
 
         // Settings collapsible
         settingsToggle.addEventListener('click', () => {
