@@ -25,7 +25,9 @@ For example Summit County, Colorado has one of the highest LE at 86.83 years, be
 ## Why is life expectancy in the US so variable?
 
 
-# Implementation
+# ⚙️ Implementation
+Interactive D3.js visualizations of U.S. life expectancy at birth (2010–2015) with county-level context and exploratory scatterplots versus demographics and election results.
+
 ## 💾 Data Sources
 This app combines data from multiple sources:
 * Life expectancy (2010-2015): [CDC/US Small-Area Life Expectancy Estimates](https://www.cdc.gov/nchs/nvss/usaleep/usaleep.html)
@@ -34,19 +36,23 @@ This app combines data from multiple sources:
 * County name/FIPS crosswalk: [Kieran Healy’s FIPS master](https://github.com/kjhealy/fips-codes) --> state_and_county_fips_master.csv or local fips_crosswalk.csv.
 * Geometries: [us-atlas TopoJSON](https://github.com/topojson/us-atlas) (states-10m, counties-10m).
 
-
-## ⚙️ Implementation
+## 🛠️ Data wrangling
 * Joining life expectancy to counties:
   * Use FIPS-keyed map (county_life_expectancy_by_fips.json) if present or derive from name-keyed CDC county data: normalize county/state strings (strip accents, convert “St.”→“Saint”, remove “County/Parish/City & Borough/Census Area/Municipality” suffixes, collapse whitespace) and join via crosswalk → FIPS.
 * County metadata: Load OpenIntro file and map by zero-padded 5-digit FIPS; accept flexible column headers (robust matching to handle variants).
 * Election margins: Parse 2016/2020 CSVs; compute margin = GOP% − DEM% in percentage points. Accept either % or proportions; auto-convert to pp.
 * For Robustness: Flexible header detection for external CSVs; fallback name join if precomputed FIPS JSON is absent; manual fixes for a few CA county labels.
 
+Notes & limitations
+* LE values reflect 2010–2015 averages; demographic/economic fields are the latest available (often 2017) in OpenIntro.
+* Some Alaska county-equivalents and independent cities use special naming rules; normalization covers common cases.
+* Puerto Rico is excluded from some UI controls.
+
 ### 🗺️ Visualization:
 * Maps (state & county): D3 + TopoJSON (geoAlbersUsa), sequential color (default Red→Blue for low→high LE), legend with numeric scale, tooltips with bold LE (years) and county extras.
 * Scatterplots: Life expectancy (y) vs chosen x-variable (demographics or 2016/2020 margin). Each dot = county, radius ∝ population. Wheel/pinch zoom + pan, Reset zoom, optional OLS regression line + R² (checkbox), state filter (multi-select). Tooltips show county name, LE (years), x-value (with units), and population.
 
-## 📁 Files
+### 📁 Files
 ```
 life-expectancy-web-app
 ├─ index.html
