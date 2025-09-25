@@ -1,0 +1,2316 @@
+{
+  "Alabama": {
+    "top5": [
+      [
+        "Shelby County, AL",
+        78.36
+      ],
+      [
+        "Coosa County, AL",
+        77.9
+      ],
+      [
+        "Bullock County, AL",
+        77.6
+      ],
+      [
+        "Lee County, AL",
+        77.55
+      ],
+      [
+        "Baldwin County, AL",
+        77.48
+      ]
+    ],
+    "bottom5": [
+      [
+        "Walker County, AL",
+        71.44
+      ],
+      [
+        "Dallas County, AL",
+        72.47
+      ],
+      [
+        "Etowah County, AL",
+        72.52
+      ],
+      [
+        "Talladega County, AL",
+        72.72
+      ],
+      [
+        "Russell County, AL",
+        72.8
+      ]
+    ]
+  },
+  "Alaska": {
+    "top5": [
+      [
+        "Aleutians East Borough, AK",
+        86.9
+      ],
+      [
+        "Petersburg Census Area, AK",
+        84.6
+      ],
+      [
+        "Dillingham Census Area, AK",
+        83.25
+      ],
+      [
+        "Haines Borough, AK",
+        82.6
+      ],
+      [
+        "Nome Census Area, AK",
+        82.2
+      ]
+    ],
+    "bottom5": [
+      [
+        "Yukon-Koyukuk Census Area, AK",
+        76.28
+      ],
+      [
+        "Lake and Peninsula Borough, AK",
+        77.0
+      ],
+      [
+        "Northwest Arctic Borough, AK",
+        77.5
+      ],
+      [
+        "Aleutians West Census Area, AK",
+        77.75
+      ],
+      [
+        "Southeast Fairbanks Census Area, AK",
+        77.85
+      ]
+    ]
+  },
+  "Arizona": {
+    "top5": [
+      [
+        "Greenlee County, AZ",
+        82.7
+      ],
+      [
+        "Santa Cruz County, AZ",
+        81.5
+      ],
+      [
+        "(blank)",
+        79.9
+      ],
+      [
+        "Coconino County, AZ",
+        78.92
+      ],
+      [
+        "Yavapai County, AZ",
+        78.82
+      ]
+    ],
+    "bottom5": [
+      [
+        "Mohave County, AZ",
+        75.1
+      ],
+      [
+        "Apache County, AZ",
+        75.74
+      ],
+      [
+        "Navajo County, AZ",
+        76.66
+      ],
+      [
+        "La Paz County, AZ",
+        76.73
+      ],
+      [
+        "Yuma County, AZ",
+        78.12
+      ]
+    ]
+  },
+  "Arkansas": {
+    "top5": [
+      [
+        "Newton County, AR",
+        82.2
+      ],
+      [
+        "Woodruff County, AR",
+        78.6
+      ],
+      [
+        "Izard County, AR",
+        78.45
+      ],
+      [
+        "Prairie County, AR",
+        78.17
+      ],
+      [
+        "Benton County, AR",
+        78.14
+      ]
+    ],
+    "bottom5": [
+      [
+        "Phillips County, AR",
+        72.38
+      ],
+      [
+        "Poinsett County, AR",
+        72.46
+      ],
+      [
+        "Jefferson County, AR",
+        73.22
+      ],
+      [
+        "Miller County, AR",
+        73.23
+      ],
+      [
+        "Crittenden County, AR",
+        73.31
+      ]
+    ]
+  },
+  "California": {
+    "top5": [
+      [
+        "Sierra County, CA",
+        84.9
+      ],
+      [
+        "Marin County, CA",
+        83.39
+      ],
+      [
+        "San Mateo County, CA",
+        82.74
+      ],
+      [
+        "Santa Clara County, CA",
+        82.65
+      ],
+      [
+        "San Benito County, CA",
+        82.4
+      ]
+    ],
+    "bottom5": [
+      [
+        "Lake County, CA",
+        74.82
+      ],
+      [
+        "Yuba County, CA",
+        75.97
+      ],
+      [
+        "Lassen County, CA",
+        76.42
+      ],
+      [
+        "Del Norte County, CA",
+        76.49
+      ],
+      [
+        "Shasta County, CA",
+        76.77
+      ]
+    ]
+  },
+  "Colorado": {
+    "top5": [
+      [
+        "Cheyenne County, CO",
+        89.5
+      ],
+      [
+        "Ouray County, CO",
+        83.2
+      ],
+      [
+        "Clear Creek County, CO",
+        82.9
+      ],
+      [
+        "Custer County, CO",
+        82.7
+      ],
+      [
+        "Saguache County, CO",
+        82.6
+      ]
+    ],
+    "bottom5": [
+      [
+        "Sedgwick County, CO",
+        76.1
+      ],
+      [
+        "Fremont County, CO",
+        76.14
+      ],
+      [
+        "Pueblo County, CO",
+        76.36
+      ],
+      [
+        "Crowley County, CO",
+        76.4
+      ],
+      [
+        "Dolores County, CO",
+        76.8
+      ]
+    ]
+  },
+  "Connecticut": {
+    "top5": [
+      [
+        "Fairfield County, CT",
+        81.5
+      ],
+      [
+        "Tolland County, CT",
+        81.03
+      ],
+      [
+        "(blank)",
+        80.9
+      ],
+      [
+        "Middlesex County, CT",
+        80.74
+      ],
+      [
+        "Litchfield County, CT",
+        80.09
+      ]
+    ],
+    "bottom5": [
+      [
+        "New Haven County, CT",
+        79.29
+      ],
+      [
+        "Windham County, CT",
+        79.37
+      ],
+      [
+        "Hartford County, CT",
+        79.48
+      ],
+      [
+        "New London County, CT",
+        79.58
+      ],
+      [
+        "Litchfield County, CT",
+        80.09
+      ]
+    ]
+  },
+  "Delaware": {
+    "top5": [
+      [
+        "(blank)",
+        78.7
+      ],
+      [
+        "Sussex County, DE",
+        78.48
+      ],
+      [
+        "New Castle County, DE",
+        77.77
+      ],
+      [
+        "Kent County, DE",
+        76.8
+      ]
+    ],
+    "bottom5": [
+      [
+        "Kent County, DE",
+        76.8
+      ],
+      [
+        "New Castle County, DE",
+        77.77
+      ],
+      [
+        "Sussex County, DE",
+        78.48
+      ],
+      [
+        "(blank)",
+        78.7
+      ]
+    ]
+  },
+  "District of Columbia": {
+    "top5": [
+      [
+        "(blank)",
+        78.5
+      ],
+      [
+        "District of Columbia, DC",
+        76.41
+      ]
+    ],
+    "bottom5": [
+      [
+        "District of Columbia, DC",
+        76.41
+      ],
+      [
+        "(blank)",
+        78.5
+      ]
+    ]
+  },
+  "Florida": {
+    "top5": [
+      [
+        "Martin County, FL",
+        81.61
+      ],
+      [
+        "Collier County, FL",
+        81.59
+      ],
+      [
+        "Miami-Dade County, FL",
+        80.56
+      ],
+      [
+        "Palm Beach County, FL",
+        80.35
+      ],
+      [
+        "St. Johns County, FL",
+        80.34
+      ]
+    ],
+    "bottom5": [
+      [
+        "Union County, FL",
+        73.43
+      ],
+      [
+        "Washington County, FL",
+        74.08
+      ],
+      [
+        "Holmes County, FL",
+        74.5
+      ],
+      [
+        "Putnam County, FL",
+        74.52
+      ],
+      [
+        "Glades County, FL",
+        74.55
+      ]
+    ]
+  },
+  "Georgia": {
+    "top5": [
+      [
+        "Harris County, GA",
+        80.97
+      ],
+      [
+        "Oconee County, GA",
+        80.83
+      ],
+      [
+        "Dooly County, GA",
+        79.93
+      ],
+      [
+        "Fayette County, GA",
+        79.78
+      ],
+      [
+        "Forsyth County, GA",
+        79.76
+      ]
+    ],
+    "bottom5": [
+      [
+        "Warren County, GA",
+        71.8
+      ],
+      [
+        "Clay County, GA",
+        72.2
+      ],
+      [
+        "Ware County, GA",
+        72.67
+      ],
+      [
+        "Bacon County, GA",
+        72.83
+      ],
+      [
+        "Chattooga County, GA",
+        72.9
+      ]
+    ]
+  },
+  "Hawaii": {
+    "top5": [
+      [
+        "Kauai County, HI",
+        84.47
+      ],
+      [
+        "(blank)",
+        82.0
+      ],
+      [
+        "Honolulu County, HI",
+        81.29
+      ],
+      [
+        "Maui County, HI",
+        80.88
+      ],
+      [
+        "Hawaii County, HI",
+        80.73
+      ]
+    ],
+    "bottom5": [
+      [
+        "Hawaii County, HI",
+        80.73
+      ],
+      [
+        "Maui County, HI",
+        80.88
+      ],
+      [
+        "Honolulu County, HI",
+        81.29
+      ],
+      [
+        "(blank)",
+        82.0
+      ],
+      [
+        "Kauai County, HI",
+        84.47
+      ]
+    ]
+  },
+  "Idaho": {
+    "top5": [
+      [
+        "Custer County, ID",
+        87.7
+      ],
+      [
+        "Teton County, ID",
+        85.4
+      ],
+      [
+        "Blaine County, ID",
+        82.15
+      ],
+      [
+        "Lewis County, ID",
+        81.85
+      ],
+      [
+        "Boise County, ID",
+        81.6
+      ]
+    ],
+    "bottom5": [
+      [
+        "Benewah County, ID",
+        75.6
+      ],
+      [
+        "Clearwater County, ID",
+        76.85
+      ],
+      [
+        "Bannock County, ID",
+        76.93
+      ],
+      [
+        "Twin Falls County, ID",
+        77.35
+      ],
+      [
+        "Gem County, ID",
+        77.47
+      ]
+    ]
+  },
+  "Illinois": {
+    "top5": [
+      [
+        "Calhoun County, IL",
+        82.15
+      ],
+      [
+        "Putnam County, IL",
+        81.8
+      ],
+      [
+        "Hancock County, IL",
+        81.54
+      ],
+      [
+        "DuPage County, IL",
+        81.29
+      ],
+      [
+        "Stark County, IL",
+        80.65
+      ]
+    ],
+    "bottom5": [
+      [
+        "Lawrence County, IL",
+        72.38
+      ],
+      [
+        "Gallatin County, IL",
+        73.7
+      ],
+      [
+        "Saline County, IL",
+        74.14
+      ],
+      [
+        "Alexander County, IL",
+        74.47
+      ],
+      [
+        "Massac County, IL",
+        74.78
+      ]
+    ]
+  },
+  "Indiana": {
+    "top5": [
+      [
+        "Hamilton County, IN",
+        81.05
+      ],
+      [
+        "Pike County, IN",
+        80.92
+      ],
+      [
+        "Warren County, IN",
+        80.85
+      ],
+      [
+        "Spencer County, IN",
+        80.74
+      ],
+      [
+        "Whitley County, IN",
+        80.63
+      ]
+    ],
+    "bottom5": [
+      [
+        "Scott County, IN",
+        73.48
+      ],
+      [
+        "Starke County, IN",
+        73.91
+      ],
+      [
+        "Vigo County, IN",
+        74.75
+      ],
+      [
+        "Lawrence County, IN",
+        74.78
+      ],
+      [
+        "Fayette County, IN",
+        74.83
+      ]
+    ]
+  },
+  "Iowa": {
+    "top5": [
+      [
+        "Cedar County, IA",
+        82.18
+      ],
+      [
+        "Sioux County, IA",
+        82.17
+      ],
+      [
+        "Johnson County, IA",
+        82.14
+      ],
+      [
+        "Osceola County, IA",
+        82.1
+      ],
+      [
+        "Winneshiek County, IA",
+        82.04
+      ]
+    ],
+    "bottom5": [
+      [
+        "Monona County, IA",
+        75.6
+      ],
+      [
+        "Ringgold County, IA",
+        75.7
+      ],
+      [
+        "Mills County, IA",
+        76.28
+      ],
+      [
+        "Monroe County, IA",
+        76.47
+      ],
+      [
+        "Webster County, IA",
+        76.51
+      ]
+    ]
+  },
+  "Kansas": {
+    "top5": [
+      [
+        "Haskell County, KS",
+        88.6
+      ],
+      [
+        "Stanton County, KS",
+        87.9
+      ],
+      [
+        "Clark County, KS",
+        86.6
+      ],
+      [
+        "Gray County, KS",
+        86.15
+      ],
+      [
+        "Morton County, KS",
+        85.3
+      ]
+    ],
+    "bottom5": [
+      [
+        "Woodson County, KS",
+        73.5
+      ],
+      [
+        "Cherokee County, KS",
+        74.63
+      ],
+      [
+        "Wilson County, KS",
+        74.8
+      ],
+      [
+        "Labette County, KS",
+        75.15
+      ],
+      [
+        "Wyandotte County, KS",
+        75.17
+      ]
+    ]
+  },
+  "Kentucky": {
+    "top5": [
+      [
+        "Oldham County, KY",
+        79.81
+      ],
+      [
+        "McLean County, KY",
+        79.47
+      ],
+      [
+        "Boone County, KY",
+        78.43
+      ],
+      [
+        "Shelby County, KY",
+        78.31
+      ],
+      [
+        "Scott County, KY",
+        77.77
+      ]
+    ],
+    "bottom5": [
+      [
+        "Breathitt County, KY",
+        70.16
+      ],
+      [
+        "Powell County, KY",
+        70.75
+      ],
+      [
+        "Estill County, KY",
+        71.35
+      ],
+      [
+        "Whitley County, KY",
+        71.67
+      ],
+      [
+        "Owsley County, KY",
+        71.9
+      ]
+    ]
+  },
+  "Louisiana": {
+    "top5": [
+      [
+        "Tensas Parish, LA",
+        80.25
+      ],
+      [
+        "Ascension Parish, LA",
+        78.4
+      ],
+      [
+        "Cameron Parish, LA",
+        78.25
+      ],
+      [
+        "La Salle Parish, LA",
+        77.8
+      ],
+      [
+        "Lafayette Parish, LA",
+        77.77
+      ]
+    ],
+    "bottom5": [
+      [
+        "East Carroll Parish, LA",
+        69.05
+      ],
+      [
+        "Madison Parish, LA",
+        71.4
+      ],
+      [
+        "Morehouse Parish, LA",
+        71.69
+      ],
+      [
+        "Catahoula Parish, LA",
+        72.87
+      ],
+      [
+        "Concordia Parish, LA",
+        73.16
+      ]
+    ]
+  },
+  "Maine": {
+    "top5": [
+      [
+        "Cumberland County, ME",
+        80.1
+      ],
+      [
+        "Sagadahoc County, ME",
+        79.89
+      ],
+      [
+        "Hancock County, ME",
+        79.85
+      ],
+      [
+        "York County, ME",
+        79.07
+      ],
+      [
+        "Lincoln County, ME",
+        79.01
+      ]
+    ],
+    "bottom5": [
+      [
+        "Washington County, ME",
+        76.35
+      ],
+      [
+        "Piscataquis County, ME",
+        76.6
+      ],
+      [
+        "Somerset County, ME",
+        76.67
+      ],
+      [
+        "Androscoggin County, ME",
+        76.93
+      ],
+      [
+        "Penobscot County, ME",
+        77.13
+      ]
+    ]
+  },
+  "Maryland": {
+    "top5": [
+      [
+        "Montgomery County, MD",
+        83.01
+      ],
+      [
+        "Howard County, MD",
+        81.71
+      ],
+      [
+        "St. Mary's County, MD",
+        80.75
+      ],
+      [
+        "Calvert County, MD",
+        80.74
+      ],
+      [
+        "Talbot County, MD",
+        80.17
+      ]
+    ],
+    "bottom5": [
+      [
+        "Baltimore city, MD",
+        73.04
+      ],
+      [
+        "Somerset County, MD",
+        74.87
+      ],
+      [
+        "Caroline County, MD",
+        75.83
+      ],
+      [
+        "Washington County, MD",
+        76.16
+      ],
+      [
+        "Allegany County, MD",
+        76.32
+      ]
+    ]
+  },
+  "Massachusetts": {
+    "top5": [
+      [
+        "Nantucket County, MA",
+        81.85
+      ],
+      [
+        "Middlesex County, MA",
+        81.7
+      ],
+      [
+        "Hampshire County, MA",
+        81.62
+      ],
+      [
+        "Norfolk County, MA",
+        81.46
+      ],
+      [
+        "Dukes County, MA",
+        81.28
+      ]
+    ],
+    "bottom5": [
+      [
+        "Bristol County, MA",
+        78.49
+      ],
+      [
+        "Hampden County, MA",
+        78.61
+      ],
+      [
+        "Suffolk County, MA",
+        79.63
+      ],
+      [
+        "Worcester County, MA",
+        79.74
+      ],
+      [
+        "Plymouth County, MA",
+        79.95
+      ]
+    ]
+  },
+  "Michigan": {
+    "top5": [
+      [
+        "Keweenaw County, MI",
+        82.7
+      ],
+      [
+        "Leelanau County, MI",
+        82.68
+      ],
+      [
+        "Menominee County, MI",
+        82.17
+      ],
+      [
+        "Mackinac County, MI",
+        81.94
+      ],
+      [
+        "Luce County, MI",
+        81.5
+      ]
+    ],
+    "bottom5": [
+      [
+        "Wayne County, MI",
+        74.46
+      ],
+      [
+        "Clare County, MI",
+        75.19
+      ],
+      [
+        "Genesee County, MI",
+        75.29
+      ],
+      [
+        "Ogemaw County, MI",
+        75.97
+      ],
+      [
+        "Iosco County, MI",
+        76.05
+      ]
+    ]
+  },
+  "Minnesota": {
+    "top5": [
+      [
+        "Marshall County, MN",
+        85.35
+      ],
+      [
+        "Grant County, MN",
+        84.9
+      ],
+      [
+        "Jackson County, MN",
+        84.75
+      ],
+      [
+        "Swift County, MN",
+        83.68
+      ],
+      [
+        "Stevens County, MN",
+        83.67
+      ]
+    ],
+    "bottom5": [
+      [
+        "Mahnomen County, MN",
+        77.2
+      ],
+      [
+        "Mille Lacs County, MN",
+        77.43
+      ],
+      [
+        "Carlton County, MN",
+        77.81
+      ],
+      [
+        "Wadena County, MN",
+        77.87
+      ],
+      [
+        "Traverse County, MN",
+        78.0
+      ]
+    ]
+  },
+  "Mississippi": {
+    "top5": [
+      [
+        "Smith County, MS",
+        79.2
+      ],
+      [
+        "Madison County, MS",
+        78.79
+      ],
+      [
+        "Amite County, MS",
+        77.9
+      ],
+      [
+        "Lafayette County, MS",
+        77.88
+      ],
+      [
+        "Pontotoc County, MS",
+        77.78
+      ]
+    ],
+    "bottom5": [
+      [
+        "Tallahatchie County, MS",
+        70.85
+      ],
+      [
+        "Marion County, MS",
+        71.65
+      ],
+      [
+        "Quitman County, MS",
+        72.1
+      ],
+      [
+        "Issaquena County, MS",
+        72.2
+      ],
+      [
+        "Washington County, MS",
+        72.27
+      ]
+    ]
+  },
+  "Missouri": {
+    "top5": [
+      [
+        "Putnam County, MO",
+        83.3
+      ],
+      [
+        "Hickory County, MO",
+        82.2
+      ],
+      [
+        "Perry County, MO",
+        81.38
+      ],
+      [
+        "Ozark County, MO",
+        81.15
+      ],
+      [
+        "Monroe County, MO",
+        80.63
+      ]
+    ],
+    "bottom5": [
+      [
+        "Ripley County, MO",
+        71.88
+      ],
+      [
+        "Butler County, MO",
+        72.56
+      ],
+      [
+        "Pemiscot County, MO",
+        72.85
+      ],
+      [
+        "Dunklin County, MO",
+        73.18
+      ],
+      [
+        "St. Louis city, MO",
+        73.39
+      ]
+    ]
+  },
+  "Montana": {
+    "top5": [
+      [
+        "Granite County, MT",
+        87.0
+      ],
+      [
+        "Madison County, MT",
+        84.13
+      ],
+      [
+        "Teton County, MT",
+        83.8
+      ],
+      [
+        "Judith Basin County, MT",
+        82.7
+      ],
+      [
+        "McCone County, MT",
+        81.8
+      ]
+    ],
+    "bottom5": [
+      [
+        "Broadwater County, MT",
+        72.3
+      ],
+      [
+        "Glacier County, MT",
+        75.07
+      ],
+      [
+        "Silver Bow County, MT",
+        75.7
+      ],
+      [
+        "Meagher County, MT",
+        75.8
+      ],
+      [
+        "Roosevelt County, MT",
+        75.8
+      ]
+    ]
+  },
+  "Nebraska": {
+    "top5": [
+      [
+        "Sioux County, NE",
+        86.6
+      ],
+      [
+        "Frontier County, NE",
+        86.2
+      ],
+      [
+        "Howard County, NE",
+        83.95
+      ],
+      [
+        "Perkins County, NE",
+        82.9
+      ],
+      [
+        "Deuel County, NE",
+        82.8
+      ]
+    ],
+    "bottom5": [
+      [
+        "Jefferson County, NE",
+        76.33
+      ],
+      [
+        "Nance County, NE",
+        76.7
+      ],
+      [
+        "Garfield County, NE",
+        76.7
+      ],
+      [
+        "Rock County, NE",
+        77.0
+      ],
+      [
+        "Keith County, NE",
+        77.07
+      ]
+    ]
+  },
+  "Nevada": {
+    "top5": [
+      [
+        "Eureka County, NV",
+        81.4
+      ],
+      [
+        "Storey County, NV",
+        80.6
+      ],
+      [
+        "Mineral County, NV",
+        80.3
+      ],
+      [
+        "Lander County, NV",
+        79.8
+      ],
+      [
+        "Douglas County, NV",
+        79.77
+      ]
+    ],
+    "bottom5": [
+      [
+        "Nye County, NV",
+        75.0
+      ],
+      [
+        "Clark County, NV",
+        77.29
+      ],
+      [
+        "Carson City, NV",
+        77.5
+      ],
+      [
+        "Humboldt County, NV",
+        77.9
+      ],
+      [
+        "Lyon County, NV",
+        78.04
+      ]
+    ]
+  },
+  "New Hampshire": {
+    "top5": [
+      [
+        "Carroll County, NH",
+        82.53
+      ],
+      [
+        "Grafton County, NH",
+        81.68
+      ],
+      [
+        "Rockingham County, NH",
+        80.59
+      ],
+      [
+        "Cheshire County, NH",
+        80.42
+      ],
+      [
+        "Belknap County, NH",
+        80.21
+      ]
+    ],
+    "bottom5": [
+      [
+        "Coos County, NH",
+        78.8
+      ],
+      [
+        "Hillsborough County, NH",
+        79.06
+      ],
+      [
+        "Merrimack County, NH",
+        79.5
+      ],
+      [
+        "Strafford County, NH",
+        79.51
+      ],
+      [
+        "Sullivan County, NH",
+        80.0
+      ]
+    ]
+  },
+  "New Jersey": {
+    "top5": [
+      [
+        "Hunterdon County, NJ",
+        82.6
+      ],
+      [
+        "Bergen County, NJ",
+        82.35
+      ],
+      [
+        "Morris County, NJ",
+        82.03
+      ],
+      [
+        "Somerset County, NJ",
+        81.79
+      ],
+      [
+        "Middlesex County, NJ",
+        80.7
+      ]
+    ],
+    "bottom5": [
+      [
+        "Cumberland County, NJ",
+        76.33
+      ],
+      [
+        "Salem County, NJ",
+        76.98
+      ],
+      [
+        "Atlantic County, NJ",
+        77.55
+      ],
+      [
+        "Gloucester County, NJ",
+        77.64
+      ],
+      [
+        "Camden County, NJ",
+        77.81
+      ]
+    ]
+  },
+  "New Mexico": {
+    "top5": [
+      [
+        "Guadalupe County, NM",
+        84.0
+      ],
+      [
+        "Los Alamos County, NM",
+        83.17
+      ],
+      [
+        "Lincoln County, NM",
+        81.67
+      ],
+      [
+        "Colfax County, NM",
+        81.53
+      ],
+      [
+        "Taos County, NM",
+        81.42
+      ]
+    ],
+    "bottom5": [
+      [
+        "Sierra County, NM",
+        75.53
+      ],
+      [
+        "Eddy County, NM",
+        75.75
+      ],
+      [
+        "Quay County, NM",
+        75.9
+      ],
+      [
+        "McKinley County, NM",
+        76.08
+      ],
+      [
+        "De Baca County, NM",
+        76.5
+      ]
+    ]
+  },
+  "New York": {
+    "top5": [
+      [
+        "Lewis County, NY",
+        84.74
+      ],
+      [
+        "Westchester County, NY",
+        82.37
+      ],
+      [
+        "Nassau County, NY",
+        82.37
+      ],
+      [
+        "Rockland County, NY",
+        82.31
+      ],
+      [
+        "New York County, NY",
+        81.94
+      ]
+    ],
+    "bottom5": [
+      [
+        "Niagara County, NY",
+        77.14
+      ],
+      [
+        "Chemung County, NY",
+        77.57
+      ],
+      [
+        "Erie County, NY",
+        77.67
+      ],
+      [
+        "Bronx County, NY",
+        78.24
+      ],
+      [
+        "Orleans County, NY",
+        78.26
+      ]
+    ]
+  },
+  "North Carolina": {
+    "top5": [
+      [
+        "Chatham County, NC",
+        82.09
+      ],
+      [
+        "Camden County, NC",
+        81.05
+      ],
+      [
+        "Moore County, NC",
+        80.77
+      ],
+      [
+        "Wake County, NC",
+        80.25
+      ],
+      [
+        "Watauga County, NC",
+        80.25
+      ]
+    ],
+    "bottom5": [
+      [
+        "Columbus County, NC",
+        74.17
+      ],
+      [
+        "Vance County, NC",
+        74.21
+      ],
+      [
+        "Lenoir County, NC",
+        74.29
+      ],
+      [
+        "Robeson County, NC",
+        74.33
+      ],
+      [
+        "Richmond County, NC",
+        74.39
+      ]
+    ]
+  },
+  "North Dakota": {
+    "top5": [
+      [
+        "Divide County, ND",
+        85.1
+      ],
+      [
+        "Dunn County, ND",
+        84.8
+      ],
+      [
+        "Kidder County, ND",
+        84.6
+      ],
+      [
+        "Steele County, ND",
+        84.5
+      ],
+      [
+        "Oliver County, ND",
+        84.3
+      ]
+    ],
+    "bottom5": [
+      [
+        "Sioux County, ND",
+        71.45
+      ],
+      [
+        "Eddy County, ND",
+        72.2
+      ],
+      [
+        "Benson County, ND",
+        73.35
+      ],
+      [
+        "Mountrail County, ND",
+        74.1
+      ],
+      [
+        "Rolette County, ND",
+        74.9
+      ]
+    ]
+  },
+  "Ohio": {
+    "top5": [
+      [
+        "Holmes County, OH",
+        83.0
+      ],
+      [
+        "Wyandot County, OH",
+        80.73
+      ],
+      [
+        "Putnam County, OH",
+        80.57
+      ],
+      [
+        "Geauga County, OH",
+        80.5
+      ],
+      [
+        "Henry County, OH",
+        80.3
+      ]
+    ],
+    "bottom5": [
+      [
+        "Jackson County, OH",
+        73.49
+      ],
+      [
+        "Scioto County, OH",
+        73.57
+      ],
+      [
+        "Pike County, OH",
+        73.65
+      ],
+      [
+        "Gallia County, OH",
+        73.93
+      ],
+      [
+        "Adams County, OH",
+        74.02
+      ]
+    ]
+  },
+  "Oklahoma": {
+    "top5": [
+      [
+        "Harper County, OK",
+        83.35
+      ],
+      [
+        "Cimarron County, OK",
+        82.45
+      ],
+      [
+        "Roger Mills County, OK",
+        82.4
+      ],
+      [
+        "Kingfisher County, OK",
+        80.7
+      ],
+      [
+        "Washita County, OK",
+        79.97
+      ]
+    ],
+    "bottom5": [
+      [
+        "McIntosh County, OK",
+        69.72
+      ],
+      [
+        "Kiowa County, OK",
+        72.2
+      ],
+      [
+        "Hughes County, OK",
+        73.42
+      ],
+      [
+        "Muskogee County, OK",
+        73.54
+      ],
+      [
+        "Okmulgee County, OK",
+        73.79
+      ]
+    ]
+  },
+  "Oregon": {
+    "top5": [
+      [
+        "Benton County, OR",
+        81.92
+      ],
+      [
+        "Sherman County, OR",
+        81.7
+      ],
+      [
+        "Grant County, OR",
+        81.4
+      ],
+      [
+        "Hood River County, OR",
+        81.3
+      ],
+      [
+        "Washington County, OR",
+        81.2
+      ]
+    ],
+    "bottom5": [
+      [
+        "Curry County, OR",
+        75.85
+      ],
+      [
+        "Coos County, OR",
+        76.21
+      ],
+      [
+        "Josephine County, OR",
+        76.86
+      ],
+      [
+        "Douglas County, OR",
+        76.87
+      ],
+      [
+        "Crook County, OR",
+        77.25
+      ]
+    ]
+  },
+  "Pennsylvania": {
+    "top5": [
+      [
+        "Centre County, PA",
+        81.78
+      ],
+      [
+        "Snyder County, PA",
+        81.17
+      ],
+      [
+        "Chester County, PA",
+        80.77
+      ],
+      [
+        "Union County, PA",
+        80.56
+      ],
+      [
+        "Pike County, PA",
+        80.48
+      ]
+    ],
+    "bottom5": [
+      [
+        "Philadelphia County, PA",
+        75.38
+      ],
+      [
+        "Forest County, PA",
+        76.0
+      ],
+      [
+        "Schuylkill County, PA",
+        76.29
+      ],
+      [
+        "Fayette County, PA",
+        76.34
+      ],
+      [
+        "Luzerne County, PA",
+        76.53
+      ]
+    ]
+  },
+  "Rhode Island": {
+    "top5": [
+      [
+        "Bristol County, RI",
+        80.7
+      ],
+      [
+        "Washington County, RI",
+        80.64
+      ],
+      [
+        "Newport County, RI",
+        80.52
+      ],
+      [
+        "(blank)",
+        79.9
+      ],
+      [
+        "Kent County, RI",
+        78.87
+      ]
+    ],
+    "bottom5": [
+      [
+        "Providence County, RI",
+        78.53
+      ],
+      [
+        "Kent County, RI",
+        78.87
+      ],
+      [
+        "(blank)",
+        79.9
+      ],
+      [
+        "Newport County, RI",
+        80.52
+      ],
+      [
+        "Washington County, RI",
+        80.64
+      ]
+    ]
+  },
+  "South Carolina": {
+    "top5": [
+      [
+        "Beaufort County, SC",
+        80.02
+      ],
+      [
+        "Saluda County, SC",
+        78.2
+      ],
+      [
+        "Dorchester County, SC",
+        78.0
+      ],
+      [
+        "Greenwood County, SC",
+        77.89
+      ],
+      [
+        "Lexington County, SC",
+        77.74
+      ]
+    ],
+    "bottom5": [
+      [
+        "Allendale County, SC",
+        72.5
+      ],
+      [
+        "Williamsburg County, SC",
+        73.18
+      ],
+      [
+        "Lee County, SC",
+        73.28
+      ],
+      [
+        "Darlington County, SC",
+        73.45
+      ],
+      [
+        "Union County, SC",
+        73.49
+      ]
+    ]
+  },
+  "South Dakota": {
+    "top5": [
+      [
+        "Harding County, SD",
+        84.1
+      ],
+      [
+        "Bon Homme County, SD",
+        83.75
+      ],
+      [
+        "Deuel County, SD",
+        83.55
+      ],
+      [
+        "Lake County, SD",
+        83.53
+      ],
+      [
+        "Aurora County, SD",
+        83.5
+      ]
+    ],
+    "bottom5": [
+      [
+        "Todd County, SD",
+        74.7
+      ],
+      [
+        "Buffalo County, SD",
+        74.8
+      ],
+      [
+        "Ziebach County, SD",
+        75.2
+      ],
+      [
+        "Bennett County, SD",
+        76.25
+      ],
+      [
+        "Gregory County, SD",
+        76.6
+      ]
+    ]
+  },
+  "Tennessee": {
+    "top5": [
+      [
+        "Williamson County, TN",
+        81.23
+      ],
+      [
+        "Moore County, TN",
+        78.2
+      ],
+      [
+        "Rutherford County, TN",
+        77.36
+      ],
+      [
+        "Sumner County, TN",
+        77.1
+      ],
+      [
+        "Wilson County, TN",
+        76.96
+      ]
+    ],
+    "bottom5": [
+      [
+        "Scott County, TN",
+        72.2
+      ],
+      [
+        "Trousdale County, TN",
+        72.25
+      ],
+      [
+        "Jackson County, TN",
+        72.35
+      ],
+      [
+        "Hancock County, TN",
+        72.65
+      ],
+      [
+        "Cocke County, TN",
+        72.7
+      ]
+    ]
+  },
+  "Texas": {
+    "top5": [
+      [
+        "Sherman County, TX",
+        87.3
+      ],
+      [
+        "Concho County, TX",
+        86.8
+      ],
+      [
+        "Menard County, TX",
+        86.4
+      ],
+      [
+        "Armstrong County, TX",
+        86.2
+      ],
+      [
+        "Schleicher County, TX",
+        85.3
+      ]
+    ],
+    "bottom5": [
+      [
+        "Marion County, TX",
+        72.53
+      ],
+      [
+        "Jones County, TX",
+        73.45
+      ],
+      [
+        "Howard County, TX",
+        73.76
+      ],
+      [
+        "San Augustine County, TX",
+        74.13
+      ],
+      [
+        "Polk County, TX",
+        74.22
+      ]
+    ]
+  },
+  "Utah": {
+    "top5": [
+      [
+        "Wayne County, UT",
+        89.3
+      ],
+      [
+        "Garfield County, UT",
+        86.25
+      ],
+      [
+        "Millard County, UT",
+        82.5
+      ],
+      [
+        "Kane County, UT",
+        82.1
+      ],
+      [
+        "Emery County, UT",
+        81.87
+      ]
+    ],
+    "bottom5": [
+      [
+        "Carbon County, UT",
+        75.62
+      ],
+      [
+        "San Juan County, UT",
+        76.88
+      ],
+      [
+        "Grand County, UT",
+        77.1
+      ],
+      [
+        "Piute County, UT",
+        77.4
+      ],
+      [
+        "Weber County, UT",
+        77.55
+      ]
+    ]
+  },
+  "Vermont": {
+    "top5": [
+      [
+        "Windsor County, VT",
+        82.29
+      ],
+      [
+        "Orange County, VT",
+        82.27
+      ],
+      [
+        "Bennington County, VT",
+        82.13
+      ],
+      [
+        "Addison County, VT",
+        82.04
+      ],
+      [
+        "Caledonia County, VT",
+        81.58
+      ]
+    ],
+    "bottom5": [
+      [
+        "Essex County, VT",
+        78.27
+      ],
+      [
+        "Franklin County, VT",
+        78.99
+      ],
+      [
+        "Grand Isle County, VT",
+        79.7
+      ],
+      [
+        "(blank)",
+        80.0
+      ],
+      [
+        "Rutland County, VT",
+        80.13
+      ]
+    ]
+  },
+  "Virginia": {
+    "top5": [
+      [
+        "Falls Church city, VA",
+        83.8
+      ],
+      [
+        "Fairfax city, VA",
+        82.6
+      ],
+      [
+        "Fairfax County, VA",
+        82.59
+      ],
+      [
+        "Arlington County, VA",
+        82.05
+      ],
+      [
+        "Northampton County, VA",
+        82.03
+      ]
+    ],
+    "bottom5": [
+      [
+        "Sussex County, VA",
+        71.0
+      ],
+      [
+        "Emporia city, VA",
+        71.35
+      ],
+      [
+        "Greensville County, VA",
+        72.25
+      ],
+      [
+        "Petersburg city, VA",
+        72.28
+      ],
+      [
+        "Hopewell city, VA",
+        72.7
+      ]
+    ]
+  },
+  "Washington": {
+    "top5": [
+      [
+        "San Juan County, WA",
+        84.35
+      ],
+      [
+        "Klickitat County, WA",
+        82.73
+      ],
+      [
+        "Garfield County, WA",
+        82.5
+      ],
+      [
+        "Island County, WA",
+        81.44
+      ],
+      [
+        "Jefferson County, WA",
+        81.37
+      ]
+    ],
+    "bottom5": [
+      [
+        "Grays Harbor County, WA",
+        76.85
+      ],
+      [
+        "Cowlitz County, WA",
+        76.97
+      ],
+      [
+        "Pacific County, WA",
+        77.5
+      ],
+      [
+        "Mason County, WA",
+        77.56
+      ],
+      [
+        "Asotin County, WA",
+        77.56
+      ]
+    ]
+  },
+  "West Virginia": {
+    "top5": [
+      [
+        "Monroe County, WV",
+        81.0
+      ],
+      [
+        "Pendleton County, WV",
+        80.5
+      ],
+      [
+        "Doddridge County, WV",
+        80.1
+      ],
+      [
+        "Randolph County, WV",
+        79.63
+      ],
+      [
+        "Hardy County, WV",
+        78.5
+      ]
+    ],
+    "bottom5": [
+      [
+        "Lincoln County, WV",
+        72.58
+      ],
+      [
+        "Wyoming County, WV",
+        72.75
+      ],
+      [
+        "Summers County, WV",
+        72.85
+      ],
+      [
+        "Mingo County, WV",
+        73.26
+      ],
+      [
+        "Cabell County, WV",
+        73.29
+      ]
+    ]
+  },
+  "Wisconsin": {
+    "top5": [
+      [
+        "Taylor County, WI",
+        83.86
+      ],
+      [
+        "Lafayette County, WI",
+        82.46
+      ],
+      [
+        "Rusk County, WI",
+        82.12
+      ],
+      [
+        "Dunn County, WI",
+        81.61
+      ],
+      [
+        "Portage County, WI",
+        81.58
+      ]
+    ],
+    "bottom5": [
+      [
+        "Milwaukee County, WI",
+        76.74
+      ],
+      [
+        "Ashland County, WI",
+        77.07
+      ],
+      [
+        "Adams County, WI",
+        77.18
+      ],
+      [
+        "Washburn County, WI",
+        77.22
+      ],
+      [
+        "Sawyer County, WI",
+        77.5
+      ]
+    ]
+  },
+  "Wyoming": {
+    "top5": [
+      [
+        "Crook County, WY",
+        87.1
+      ],
+      [
+        "Johnson County, WY",
+        83.9
+      ],
+      [
+        "Converse County, WY",
+        82.0
+      ],
+      [
+        "Teton County, WY",
+        81.95
+      ],
+      [
+        "Sublette County, WY",
+        81.95
+      ]
+    ],
+    "bottom5": [
+      [
+        "Hot Springs County, WY",
+        76.5
+      ],
+      [
+        "Uinta County, WY",
+        77.7
+      ],
+      [
+        "Niobrara County, WY",
+        77.9
+      ],
+      [
+        "Campbell County, WY",
+        78.42
+      ],
+      [
+        "Carbon County, WY",
+        78.72
+      ]
+    ]
+  }
+}

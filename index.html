@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta
+    name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+  />
+  <title>US Life Expectancy Map (CDC 2010–2015)</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root{
+      --bg:#0b1020; --fg:#e8eefc; --muted:#9fb0d0;
+      --card:#101735; --accent:#6aa1ff; --border:#1b254d;
+      --warn:#d97706;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      background:var(--bg);color:var(--fg);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    }
+    header{
+      position:sticky;top:0;z-index:10;
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(16,23,53,.96), rgba(16,23,53,.88));
+      backdrop-filter: blur(6px);
+    }
+    header h1{font-size:16px;margin:0;font-weight:600;letter-spacing:.2px}
+    .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    label{font-size:12px;color:var(--muted)}
+    select{
+      background:#0c1530;border:1px solid var(--border);color:var(--fg);
+      padding:8px 10px;border-radius:10px;font-size:14px
+    }
+
+    .wrap{
+      display:grid;grid-template-columns: 1fr 360px; gap:16px; padding:16px;
+      max-width:1500px; margin:0 auto
+    }
+    .panel{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:16px; padding:12px
+    }
+    #map{min-height:420px; display:flex; align-items:center; justify-content:center; position:relative}
+    .tip{
+      position:absolute; pointer-events:none; background:#0c1530; border:1px solid var(--border);
+      padding:8px 10px; border-radius:10px; font-size:12px; color:var(--fg); opacity:0; transform:translate(-50%,-120%);
+      max-width: 360px; line-height: 1.25;
+      box-shadow: 0 6px 16px rgba(0,0,0,.25);
+    }
+    .legendWrap{margin-top:10px}
+    .legendSvg{width:100%;height:56px;display:block}
+    .banner{display:none;margin:8px 0 0;padding:8px 12px;background:rgba(217,119,6,.12);border:1px solid rgba(217,119,6,.45);border-radius:10px;color:#f2cf99;font-size:13px}
+    .banner.show{display:block}
+
+    .sidebar h3{margin:.2rem 0 .6rem 0}
+    .list{display:grid;grid-template-columns: 1fr auto; gap:6px; font-size:13px}
+    .muted{color:var(--muted)}
+    .footer{font-size:12px;color:var(--muted);margin-top:8px}
+
+    .credit{
+      max-width:1500px;margin:8px auto 18px;padding:0 16px;color:var(--muted);
+      font-size:12px; text-align:center;
+    }
+    .credit a{ color:#9fc2ff; text-decoration:none }
+    .credit a:hover{ text-decoration:underline }
+
+    /* SETTINGS PANEL */
+    .settings-toggle{
+      width:100%; text-align:left; background:rgba(255,255,255,.06);
+      border:1px solid var(--border); color:var(--fg); padding:10px 12px;
+      border-radius:10px; cursor:pointer; font-size:14px;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .settings-content{
+      margin-top:10px; display:none;
+    }
+    .settings-content.show{ display:block; }
+    .row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:6px 0 }
+    .row label{ font-size:12px; color:var(--muted) }
+    .row input[type=number], .row select, .row button{
+      background:#0c1530;border:1px solid var(--border);color:var(--fg);
+      padding:8px 10px;border-radius:10px;font-size:14px
+    }
+    .pill{
+      display:inline-block;background:rgba(255,255,255,.06);
+      padding:8px 12px;border-radius:999px;border:1px solid var(--border);
+      font-size:13px;cursor:pointer;touch-action:manipulation
+    }
+
+    /* Mobile-first tweaks */
+    @media (max-width: 900px){
+      .wrap{grid-template-columns: 1fr; gap:12px; padding:12px}
+      header{flex-wrap:wrap; gap:8px}
+      .controls{width:100%; overflow:auto; -webkit-overflow-scrolling:touch; padding-bottom:6px}
+      .controls > *{flex:0 0 auto}
+      #map{min-height:360px}
+      .legendSvg{height:64px}
+      .panel.sidebar{order:3}
+    }
+    @media (max-width: 520px){
+      .list{font-size:12px}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>U.S. Life Expectancy at Birth — 2010–2015 (CDC)</h1>
+    <!-- Top: simplified controls -->
+    <div class="controls" role="group" aria-label="Primary controls">
+      <label>View
+        <select id="level" aria-label="View level">
+          <option value="state">State</option>
+          <option value="county">County</option>
+          <option value="scatter">Scatterplot</option>
+        </select>
+      </label>
+      <label id="xVarWrap" class="hidden">X variable
+        <select id="xVar" aria-label="Scatterplot X variable">
+          <option value="pcIncome">Per capita income ($)</option>
+          <option value="mhi2016">Median household income ($)</option>
+          <option value="medAge">Median age (yrs)</option>
+          <option value="pct65">Over 65 to (%)</option>
+          <option value="pctUnder5">Under 5 yo (%)</option>
+          <option value="birthRate2017">Birth rate 16–50 </option>
+          <option value="hsGrad">HS graduates (%)</option>
+          <option value="pctBach">Bachelor’s degree (%)</option>
+          <option value="pctVets">Veterans (%)</option>
+          <option value="poverty">Below Poverty Line (%)</option>
+          <option value="unemp">Unemployment (%)</option>
+          <option value="density2010">Population density </option>
+          <option value="fedSpending2009">Federal spending $</option>
+          <option value="e2016_margin">2016 election margin (R–D, %)</option>
+          <option value="e2020_margin">2020 election margin (R–D, %)</option>
+        </select>
+      </label>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="panel">
+      <div id="map" aria-live="polite"></div>
+      <div id="warn" class="banner">County crosswalk not loaded; some county names may show as FIPS. Coloring still uses county data.</div>
+      <div class="legendWrap"><svg id="legend" class="legendSvg" role="img" aria-label="Color legend"></svg></div>
+      <div class="footer">State/County: hover to see value; tap for tooltip. Click a state to populate the sidebar. Scatterplot: hover/tap a dot for details; scroll/pinch to zoom, drag to pan; dot size = population.</div>
+    </div>
+
+    <div class="panel sidebar">
+      <!-- SETTINGS COLLAPSIBLE -->
+      <button id="settingsToggle" class="settings-toggle" type="button" aria-expanded="false" aria-controls="settingsContent">
+        Settings
+        <span id="settingsChevron">▸</span>
+      </button>
+      <div id="settingsContent" class="settings-content" role="region" aria-label="Settings">
+        <div class="row">
+          <label>Palette
+            <select id="palette" aria-label="Color palette">
+              <option value="RdBu" selected>Red–Blue</option>
+              <option value="Warm">Warm</option>
+              <option value="BuGn">Blue–Green</option>
+              <option value="PuBuGn">Purple–Blue–Green</option>
+              <option value="BuPu">Blue–Purple</option>
+              <option value="YlGnBu">Yellow–Green–Blue</option>
+            </select>
+          </label>
+        </div>
+        <div class="row">
+          <label>Domain min <input id="minVal" type="number" step="0.1" value="70" inputmode="decimal" aria-label="Domain minimum"></label>
+          <label>Domain max <input id="maxVal" type="number" step="0.1" value="82" inputmode="decimal" aria-label="Domain maximum"></label>
+        </div>
+        <div class="row">
+          <button id="apply" class="pill" type="button">Apply</button>
+          <button id="auto" class="pill" type="button">Auto domain</button>
+        </div>
+        <hr style="border:none;border-top:1px solid var(--border);opacity:.6;margin:10px 0">
+        <div id="scatterSettings" class="hidden">
+          <div class="row">
+            <label><input type="checkbox" id="regToggle"> Show regression & R²</label>
+            <button id="resetZoom" class="pill" type="button">Reset zoom</button>
+          </div>
+          <div class="row">
+            <label>States (filter)
+              <select id="stateFilter" multiple size="6" style="min-width:100%;max-width:100%;" aria-label="Filter by state(s)">
+                <!-- populated at runtime -->
+              </select>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATE/COUNTY BROWSER -->
+      <h3 id="sideTitle" style="margin-top:14px;">Click a state</h3>
+      <div class="muted" id="sideLE">—</div>
+      <label class="muted" style="display:block;margin:.4rem 0;">Browse counties in state
+        <select id="countySelect" style="width:100%;background:#0c1530;border:1px solid var(--border);color:var(--fg);padding:8px 10px;border-radius:10px; margin-top:4px;">
+          <option value="">—</option>
+        </select>
+      </label>
+      <h4>Highest life expectancy counties</h4>
+      <div id="topList" class="list muted">—</div>
+      <h4>Lowest life expectancy counties</h4>
+      <div id="botList" class="list muted">—</div>
+    </div>
+  </div>
+
+  <div id="tooltip" class="tip" role="tooltip" aria-hidden="true"></div>
+
+  <div class="credit">
+    Built by <strong>Nick Mark, MD</strong> (<a href="https://x.com/nickmmark" target="_blank" rel="noopener">@nickmmark</a>)
+  </div>
+
+  <script src="https://unpkg.com/d3@7"></script>
+  <script src="https://unpkg.com/topojson-client@3"></script>
+
+  <script>
+    // ---------- Constants & helpers ----------
+    const STATE_ABBR_TO_NAME = {
+      "AL":"Alabama","AK":"Alaska","AZ":"Arizona","AR":"Arkansas","CA":"California","CO":"Colorado","CT":"Connecticut",
+      "DE":"Delaware","DC":"District of Columbia","FL":"Florida","GA":"Georgia","HI":"Hawaii","ID":"Idaho","IL":"Illinois",
+      "IN":"Indiana","IA":"Iowa","KS":"Kansas","KY":"Kentucky","LA":"Louisiana","ME":"Maine","MD":"Maryland","MA":"Massachusetts",
+      "MI":"Michigan","MN":"Minnesota","MS":"Mississippi","MO":"Missouri","MT":"Montana","NE":"Nebraska","NV":"Nevada",
+      "NH":"New Hampshire","NJ":"New Jersey","NM":"New Mexico","NY":"New York","NC":"North Carolina","ND":"North Dakota",
+      "OH":"Ohio","OK":"Oklahoma","OR":"Oregon","PA":"Pennsylvania","RI":"Rhode Island","SC":"South Carolina","SD":"South Dakota",
+      "TN":"Tennessee","TX":"Texas","UT":"Utah","VT":"Vermont","VA":"Virginia","WA":"Washington","WV":"West Virginia",
+      "WI":"Wisconsin","WY":"Wyoming","PR":"Puerto Rico"
+    };
+    const FIPS_TO_NAME = {
+      "01":"Alabama","02":"Alaska","04":"Arizona","05":"Arkansas","06":"California","08":"Colorado","09":"Connecticut",
+      "10":"Delaware","11":"District of Columbia","12":"Florida","13":"Georgia","15":"Hawaii","16":"Idaho","17":"Illinois",
+      "18":"Indiana","19":"Iowa","20":"Kansas","21":"Kentucky","22":"Louisiana","23":"Maine","24":"Maryland","25":"Massachusetts",
+      "26":"Michigan","27":"Minnesota","28":"Mississippi","29":"Missouri","30":"Montana","31":"Nebraska","32":"Nevada","33":"New Hampshire",
+      "34":"New Jersey","35":"New Mexico","36":"New York","37":"North Carolina","38":"North Dakota","39":"Ohio","40":"Oklahoma","41":"Oregon",
+      "42":"Pennsylvania","44":"Rhode Island","45":"South Carolina","46":"South Dakota","47":"Tennessee","48":"Texas","49":"Utah","50":"Vermont",
+      "51":"Virginia","53":"Washington","54":"West Virginia","55":"Wisconsin","56":"Wyoming","72":"Puerto Rico"
+    };
+    const NAME_TO_FIPS2 = Object.fromEntries(Object.entries(FIPS_TO_NAME).map(([k,v]) => [v, k]));
+    const ALL_STATE_NAMES = Object.values(FIPS_TO_NAME).filter(n => n !== "Puerto Rico").sort();
+
+    function containerWidth(){
+      const wrap = document.querySelector(".panel #map");
+      const rect = wrap ? wrap.getBoundingClientRect() : null;
+      const pad = 0;
+      return Math.min(1100, Math.max(320, (rect ? rect.width : window.innerWidth) - pad));
+    }
+
+    let WIDTH = containerWidth();
+    let HEIGHT = Math.round(WIDTH * 0.62);
+
+    // UI refs
+    const tip = document.getElementById('tooltip');
+    const sideTitle = document.getElementById('sideTitle');
+    const sideLE = document.getElementById('sideLE');
+    const topList = document.getElementById('topList');
+    const botList = document.getElementById('botList');
+    const legendSvg = d3.select("#legend");
+    const warn = document.getElementById('warn');
+    const countySelect = document.getElementById('countySelect');
+
+    const levelEl = document.getElementById('level');
+    const xVarWrap = document.getElementById('xVarWrap');
+    const xVarSel = document.getElementById('xVar');
+
+    // Settings panel refs
+    const settingsToggle = document.getElementById('settingsToggle');
+    const settingsContent = document.getElementById('settingsContent');
+    const chevron = document.getElementById('settingsChevron');
+
+    const palEl = document.getElementById('palette');
+    const minEl = document.getElementById('minVal');
+    const maxEl = document.getElementById('maxVal');
+    const applyBtn = document.getElementById('apply');
+    const autoBtn = document.getElementById('auto');
+
+    const scatterSettings = document.getElementById('scatterSettings');
+    const regToggle = document.getElementById('regToggle');
+    const resetZoomBtn = document.getElementById('resetZoom');
+    const stateFilter = document.getElementById('stateFilter');
+
+    // Data holders
+    let stateValues, countySummaries, countyByName;
+    let countyFipsValue = new Map(); // FIPS -> LE
+    let fipsCross = [];              // {fips, state_name, county_name}
+    let fipsNameMap = new Map();     // FIPS -> "County, State"
+    let countyExtra = new Map();     // FIPS -> metrics (OpenIntro)
+    let election2016 = new Map();    // FIPS -> margin GOP - DEM (pp)
+    let election2020 = new Map();    // FIPS -> margin GOP - DEM (pp)
+    let extrasPromise = null;
+
+    let colorScale, svgRoot, path, projection, currentLevel = "state";
+    let statesTopo, countiesTopo;
+    let zoomBehavior;
+
+    // Scatter performance tunables
+    const ANIM_THRESHOLD = 2000;
+    const TRANSITION_MS  = 220;
+
+    // For scatter transitions + zoom persistence
+    let scatter = null;
+    let scatterPrev = new Map();
+
+    const VAR_LABELS = {
+      pcIncome: "Per capita income",
+      medAge: "Median age",
+      pct65: "Age 65+ %",
+      pctUnder5: "Under 5 %",
+      hsGrad: "HS graduates %",
+      pctBach: "Bachelor’s %",
+      pctVets: "Veterans %",
+      poverty: "Poverty %",
+      unemp: "Unemployment %",
+      mhi2016: "Median household income (2016)",
+      density2010: "Population density (2010)",
+      birthRate2017: "Birth rate 16–50 (2017)",
+      fedSpending2009: "Federal spending (2009)",
+      e2016_margin: "2016 election margin (R–D, pp)",
+      e2020_margin: "2020 election margin (R–D, pp)"
+    };
+
+    function makePalette(name){
+      if(name === 'RdBu'){
+        // red (low) → blue (high)
+        return t => d3.interpolateRgbBasis(["#b2182b","#ef8a62","#fddbc7","#d1e5f0","#67a9cf","#2166ac"])(t);
+      }
+      if(name === 'Warm'){ return d3.interpolateWarm; }
+      const maps = {
+        BuGn: t => d3.interpolateRgbBasis(["#f7fcfd","#ccece6","#66c2a4","#238b45","#00441b"])(t),
+        PuBuGn: t => d3.interpolateRgbBasis(["#fff7fb","#ece7f2","#a6bddb","#67a9cf","#1c9099","#016c59"])(t),
+        BuPu: t => d3.interpolateRgbBasis(["#f7fcfd","#c6dbef","#9ecae1","#6baed6","#3182bd","#756bb1","#54278f"])(t),
+        YlGnBu: t => d3.interpolateRgbBasis(["#ffffd9","#c7e9b4","#7fcdbb","#41b6c4","#2c7fb8","#253494"])(t)
+      };
+      return maps[name] || maps.BuGn;
+    }
+
+    // ---------- Normalization ----------
+    function stripAccents(s){ try { return s.normalize('NFD').replace(/[\u0300-\u036f]/g,''); } catch { return s; } }
+    function normCountyName(s){
+      if(!s) return s;
+      s = s.replace(/,\s*[A-Z]{2}$/,"");
+      s = s.replace(/ City and Borough| Borough| Census Area| Municipality| County| Parish/gi,"");
+      s = s.replace(/^St\.?\s+/i,"Saint ");
+      s = stripAccents(s).replace(/[-']/g," ").replace(/\s+/g," ").trim();
+      return s;
+    }
+    function canonStateName(s){
+      if(!s) return "";
+      s = s.trim();
+      if(s.length === 2 && STATE_ABBR_TO_NAME[s.toUpperCase()]) return STATE_ABBR_TO_NAME[s.toUpperCase()];
+      return s.replace(/\s+/g," ").trim();
+    }
+    function normKey(state, county){ return (stripAccents(canonStateName(state)).toUpperCase() + "|" + normCountyName(county).toUpperCase()); }
+
+    // ---------- Legend ----------
+    function setColorScaleDomainAuto(){
+      const vals = (currentLevel === 'state')
+        ? Object.values(stateValues).map(Number).filter(Number.isFinite)
+        : Array.from(countyFipsValue.values()).filter(Number.isFinite);
+      if(vals.length){
+        minEl.value = Math.floor(d3.min(vals)*10)/10;
+        maxEl.value = Math.ceil(d3.max(vals)*10)/10;
+      }
+    }
+    function drawLegend(){
+      const min = +minEl.value, max = +maxEl.value;
+      const node = document.getElementById('legend');
+      const w = node.clientWidth || 600;
+      const h = node.clientHeight || 56;
+      const margin = {left:40,right:40,top:6,bottom:20};
+      const innerW = w - margin.left - margin.right;
+
+      legendSvg.selectAll("*").remove();
+      const g = legendSvg.attr("width", w).attr("height", h).append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+      const defs = legendSvg.append("defs").append("linearGradient").attr("id","grad").attr("x1","0%").attr("x2","100%");
+      for(let i=0;i<40;i++){ const t=i/39; defs.append("stop").attr("offset",`${t*100}%`).attr("stop-color", colorScale(min+t*(max-min))); }
+      g.append("rect").attr("width", innerW).attr("height", 12).attr("fill","url(#grad)").attr("rx",6).attr("ry",6);
+      const x = d3.scaleLinear().domain([min,max]).range([0,innerW]);
+      g.append("g").attr("transform","translate(0,12)").call(d3.axisBottom(x).ticks(6).tickFormat(d3.format(".1f"))).selectAll("text").attr("fill","var(--muted)");
+      g.selectAll(".domain,line").attr("stroke","var(--border)");
+    }
+
+    // ---------- Sidebar: state lists ----------
+    function buildStateCountyList(stateName){
+      const sName = canonStateName(stateName);
+      if(!sName) return [];
+      let entries = fipsCross
+        .filter(r => canonStateName(r.state_name) === sName)
+        .map(r => ({ fips:r.fips, county:r.county_name, value: countyFipsValue.get(r.fips) }))
+        .filter(x => Number.isFinite(x.value));
+      if(entries.length === 0){
+        const f2 = NAME_TO_FIPS2[sName];
+        if(f2){
+          entries = fipsCross
+            .filter(r => (r.fips || "").slice(0,2) === f2)
+            .map(r => ({ fips:r.fips, county:r.county_name, value: countyFipsValue.get(r.fips) }))
+            .filter(x => Number.isFinite(x.value));
+        }
+      }
+      entries.sort((a,b)=> b.value - a.value);
+      return entries;
+    }
+    function populateCountyDropdown(stateName){
+      countySelect.innerHTML = '<option value="">—</option>';
+      if(!stateName){ return; }
+      const list = buildStateCountyList(stateName);
+      for(const item of list){
+        const opt = document.createElement('option');
+        opt.value = item.fips;
+        opt.textContent = `${item.county} (${item.value})`;
+        countySelect.appendChild(opt);
+      }
+    }
+    function selectStateInSidebar(stateName){
+      const v = stateValues[canonStateName(stateName)];
+      sideTitle.textContent = canonStateName(stateName) || "(unknown)";
+      sideLE.textContent = Number.isFinite(v) ? `Life expectancy: ${v}` : "—";
+      const lists = countySummaries[canonStateName(stateName)] || {top5:[], bottom5:[]};
+      renderList(topList, lists.top5);
+      renderList(botList, lists.bottom5);
+      populateCountyDropdown(stateName);
+    }
+    function renderList(container, items){
+      if(!items || items.length === 0){ container.innerHTML = '<div class="muted">No data</div>'; return; }
+      container.innerHTML = items.map(([name,val])=>`<div>${name}</div><div>${val}</div>`).join("");
+    }
+
+    // ---------- Crosswalk ----------
+    async function loadCrosswalk(){
+      const tryLocal = async (name) => {
+        try{
+          const r = await fetch(name, {cache:"no-store"});
+          if(r.ok){
+            const txt = await r.text();
+            const rows = parseCrosswalkCSV(txt);
+            if(rows.length){
+              console.log(`Loaded local crosswalk (${name}): ${rows.length} rows`);
+              return rows;
+            }
+          }
+        }catch(e){}
+        return [];
+      };
+      // Prefer /data, fallback to root and GitHub
+      let rows = await tryLocal("data/fips_crosswalk.csv");
+      if(!rows.length) rows = await tryLocal("data/state_and_county_fips_master.csv");
+      if(!rows.length) rows = await tryLocal("fips_crosswalk.csv");
+      if(!rows.length) rows = await tryLocal("state_and_county_fips_master.csv");
+      if(!rows.length){
+        try{
+          const gh = await fetch("https://raw.githubusercontent.com/kjhealy/fips-codes/master/state_and_county_fips_master.csv").then(r=>r.text());
+          rows = parseCrosswalkCSV(gh);
+          console.log(`Loaded GitHub crosswalk: ${rows.length} rows`);
+        }catch(e){ console.warn("Crosswalk fetch failed.", e); }
+      }
+      return rows;
+    }
+    function parseCrosswalkCSV(text){
+      const raw = d3.csvParse(text);
+      const rows = [];
+      for(const d of raw){
+        let fips = (d.fips ?? d.FIPS ?? "").toString().trim();
+        let state_name = (d.state ?? d.STATE ?? d.state_name ?? d.State ?? "").toString().trim();
+        let county_name = (d.name ?? d.NAME ?? d.county_name ?? "").toString().trim();
+        if(!fips){
+          const sf = (d.statefp ?? d.STATEFP ?? "").toString().trim();
+          const cf = (d.countyfp ?? d.COUNTYFP ?? "").toString().trim();
+          if(sf && cf) fips = sf.padStart(2,"0") + cf.padStart(3,"0");
+          if(!county_name) county_name = (d.county ?? d.County ?? "").toString().trim();
+          if(!state_name)  state_name  = (d.state_name ?? d.State ?? "").toString().trim();
+        }
+        fips = fips.toString().padStart(5,"0");
+        county_name = county_name.replace(/,\s*[A-Z]{2}$/,"").trim();
+        state_name = canonStateName(state_name);
+        if(fips && state_name && county_name) rows.push({ fips, state_name, county_name });
+      }
+      fipsNameMap = new Map(rows.map(r => [r.fips, `${r.county_name}, ${r.state_name}`]));
+      // manual CA fallbacks
+      const caFix = {
+        "06037":"Los Angeles, California",
+        "06073":"San Diego, California",
+        "06085":"Santa Clara, California",
+        "06081":"San Mateo, California"
+      };
+      for(const [k,v] of Object.entries(caFix)){ if(!fipsNameMap.has(k)) fipsNameMap.set(k, v); }
+      return rows;
+    }
+
+    // ---------- OpenIntro county_complete.csv ----------
+    function findColCI(columns, candidates){
+      const low = columns.map(c => c.toLowerCase());
+      for(const cand of candidates){
+        const idx = low.indexOf(cand.toLowerCase());
+        if(idx !== -1) return columns[idx];
+      }
+      for(const cand of candidates){
+        const idx = low.findIndex(c => c.includes(cand.toLowerCase()));
+        if(idx !== -1) return columns[idx];
+      }
+      return null;
+    }
+    async function loadCountyExtra(){
+      const tryFile = async (p) => {
+        try{
+          const resp = await fetch(p, {cache:"no-store"});
+          if(resp.ok){ return await resp.text(); }
+        }catch(e){}
+        return null;
+      };
+      try{
+        // Prefer /data; fallback to root
+        let txt = await tryFile("data/county_complete.csv");
+        if(!txt) txt = await tryFile("county_complete.csv");
+        if(!txt){ console.warn("county_complete.csv not found"); return; }
+
+        const parsed = d3.csvParse(txt);
+        const cols = parsed.columns;
+
+        const colFIPS = findColCI(cols, ["FIPS","fips"]) || "FIPS";
+        const colPop  = findColCI(cols, ["pop2017","population_2017","pop_2017","pop2019","pop2018","pop2010","population"]);
+        const colMedAge = findColCI(cols, ["median_age_2017","median age 2017","median_age","median age","median_age_2010"]);
+        const colOver65 = findColCI(cols, ["age_over_65_2017","age_over_65","over_65","percent over 65","65+"]);
+        const colUnder5 = findColCI(cols, ["age_under_5_2017","age_under_5","under_5","percent under 5"]);
+        const colHS   = findColCI(cols, ["hs_grad_2017","hs_grad","high school graduate","hs graduates"]);
+        const colBach = findColCI(cols, ["bachelors_2017","bachelors","bachelor's","ba"]);
+        const colVets = findColCI(cols, ["veterans_2017","veterans"]);
+        const colPci  = findColCI(cols, ["per_capita_income_2017","per_capita_income","per capita income"]);
+        const colPov  = findColCI(cols, ["poverty_2017","poverty"]);
+        const colUnemp= findColCI(cols, ["unemployment_rate_2017","unemployment_rate","unemployment","unemp_rate"]);
+
+        // Extra variables
+        const colMHI  = findColCI(cols, ["median_household_income_2016","median household income 2016","median_household_income"]);
+        const colDens = findColCI(cols, ["density_2010","population density 2010","pop_density_2010","density"]);
+        const colBirth= findColCI(cols, ["women_16_to_50_birth_rate_2017","birth_rate_2017","fertility_rate_2017","fertility_rate"]);
+        const colFed  = findColCI(cols, ["fed_spending_2009","federal_spending_2009","federal spending 2009","fed_spending"]);
+
+        parsed.forEach(row => {
+          const f5 = (row[colFIPS] || "").toString().trim().padStart(5,"0");
+          if(!f5) return;
+          countyExtra.set(f5, {
+            pop: +(row[colPop] ?? NaN),
+            medAge: +(row[colMedAge] ?? NaN),
+            pct65: +(row[colOver65] ?? NaN),
+            pctUnder5: +(row[colUnder5] ?? NaN),
+            hsGrad: +(row[colHS] ?? NaN),
+            pctBach: +(row[colBach] ?? NaN),
+            pctVets: +(row[colVets] ?? NaN),
+            pcIncome: +(row[colPci] ?? NaN),
+            poverty: +(row[colPov] ?? NaN),
+            unemp: +(row[colUnemp] ?? NaN),
+            mhi2016: +(row[colMHI] ?? NaN),
+            density2010: +(row[colDens] ?? NaN),
+            birthRate2017: +(row[colBirth] ?? NaN),
+            fedSpending2009: +(row[colFed] ?? NaN),
+          });
+        });
+        console.log(`Loaded county_complete.csv: ${countyExtra.size} counties with extras`);
+      }catch(e){
+        console.warn("Failed to parse county_complete.csv", e);
+      }
+    }
+
+    // ---------- Election CSVs ----------
+    function parseElectionCSVToMap(text){
+      const parsed = d3.csvParse(text);
+      const cols = parsed.columns;
+      const colFIPS = findColCI(cols, ["combined_fips","county_fips","FIPS","fips"]) || "combined_fips";
+      const colPerDem = findColCI(cols, ["per_dem","percent_dem","dem_percent","pct_dem","democratic_percent"]);
+      const colPerGop = findColCI(cols, ["per_gop","percent_gop","gop_percent","pct_gop","republican_percent"]);
+      const colDiff   = findColCI(cols, ["per_point_diff","per_point_difference","margin","gop_minus_dem","diff","difference"]);
+      const out = new Map();
+      parsed.forEach(row => {
+        const f5 = (row[colFIPS] || "").toString().trim().padStart(5,"0");
+        if(!f5) return;
+        let marginPP = NaN;
+        const d = row[colPerDem];
+        const r = row[colPerGop];
+        if(d != null && r != null && d !== "" && r !== ""){
+          let pd = +d, pr = +r;
+          if(Number.isFinite(pd) && Number.isFinite(pr)){
+            if(Math.abs(pd) <= 1 && Math.abs(pr) <= 1){ pd *= 100; pr *= 100; }
+            marginPP = pr - pd; // GOP minus DEM, percentage points
+          }
+        } else if(colDiff && row[colDiff] != null && row[colDiff] !== ""){
+          let m = +row[colDiff];
+          if(Number.isFinite(m)){
+            if(Math.abs(m) <= 1) m *= 100;
+            marginPP = m;
+          }
+        }
+        if(Number.isFinite(marginPP)) out.set(f5, marginPP);
+      });
+      return out;
+    }
+    async function loadElection2016(){
+      const tryFile = async (p) => {
+        try{ const r = await fetch(p, {cache:"no-store"}); if(r.ok) return await r.text(); }catch(e){} return null;
+      };
+      try{
+        let txt = await tryFile("data/2016_US_County_Level_Presidential_Results.csv");
+        if(!txt) txt = await tryFile("2016_US_County_Level_Presidential_Results.csv");
+        if(!txt){ console.warn("2016 election CSV not found"); return; }
+        election2016 = parseElectionCSVToMap(txt);
+        console.log(`Loaded 2016 election margins: ${election2016.size} counties`);
+      }catch(e){ console.warn("Failed to parse 2016 election CSV", e); }
+    }
+    async function loadElection2020(){
+      const tryFile = async (p) => {
+        try{ const r = await fetch(p, {cache:"no-store"}); if(r.ok) return await r.text(); }catch(e){} return null;
+      };
+      try{
+        let txt = await tryFile("data/2020_US_County_Level_Presidential_Results.csv");
+        if(!txt) txt = await tryFile("2020_US_County_Level_Presidential_Results.csv");
+        if(!txt){ console.warn("2020 election CSV not found"); return; }
+        election2020 = parseElectionCSVToMap(txt);
+        console.log(`Loaded 2020 election margins: ${election2020.size} counties`);
+      }catch(e){ console.warn("Failed to parse 2020 election CSV", e); }
+    }
+
+    // ---------- Formatters ----------
+    function fmtNum(x){ return Number.isFinite(x) ? d3.format(",")(x) : "—"; }
+    function fmtPct(x){ return Number.isFinite(x) ? d3.format(".1f")(x) + "%" : "—"; }
+    function fmtDollar(x){ return Number.isFinite(x) ? "$" + d3.format(",")(Math.round(x)) : "—"; }
+    function fmt1(x){ return Number.isFinite(x) ? d3.format(".2f")(x) : "—"; }
+    function fmtSigned1(x){ return Number.isFinite(x) ? d3.format("+.1f")(x) : "—"; }
+
+    // ---------- Tooltip helpers ----------
+    function lookupCountyName(fips){
+      return fipsNameMap.get(fips) || (FIPS_TO_NAME[fips.slice(0,2)] ? `FIPS ${fips}, ${FIPS_TO_NAME[fips.slice(0,2)]}` : `FIPS ${fips}`);
+    }
+    function countyTooltipHTML(fips, v){
+      const name = lookupCountyName(fips);
+      const extra = countyExtra.get(fips) || {};
+      const lines = [];
+      lines.push(`<strong>${name}</strong>`);
+      lines.push(Number.isFinite(v) ? `<strong>LE: ${fmt1(v)} years</strong>` : `<span class="muted"><strong>LE:</strong> No data</span>`);
+      if(extra){
+        if(Number.isFinite(extra.pop)) lines.push(`Population (latest): ${fmtNum(extra.pop)}`);
+        if(Number.isFinite(extra.medAge)) lines.push(`Median age (latest): ${d3.format(".1f")(extra.medAge)}`);
+        if(Number.isFinite(extra.pct65)) lines.push(`Age 65+ (latest): ${fmtPct(extra.pct65)}`);
+        if(Number.isFinite(extra.pctUnder5)) lines.push(`Under 5 (latest): ${fmtPct(extra.pctUnder5)}`);
+        if(Number.isFinite(extra.hsGrad)) lines.push(`HS graduates (latest): ${fmtPct(extra.hsGrad)}`);
+        if(Number.isFinite(extra.pctBach)) lines.push(`Bachelor's (latest): ${fmtPct(extra.pctBach)}`);
+        if(Number.isFinite(extra.pctVets)) lines.push(`Veterans (latest): ${fmtPct(extra.pctVets)}`);
+        if(Number.isFinite(extra.pcIncome)) lines.push(`Per capita income (latest): ${fmtDollar(extra.pcIncome)}`);
+        if(Number.isFinite(extra.poverty)) lines.push(`Poverty (latest): ${fmtPct(extra.poverty)}`);
+        if(Number.isFinite(extra.unemp)) lines.push(`Unemployment (latest): ${fmtPct(extra.unemp)}`);
+        if(Number.isFinite(extra.mhi2016)) lines.push(`Median HH income 2016: ${fmtDollar(extra.mhi2016)}`);
+        if(Number.isFinite(extra.density2010)) lines.push(`Density 2010: ${d3.format(",.0f")(extra.density2010)} /sq mi`);
+        if(Number.isFinite(extra.birthRate2017)) lines.push(`Birth rate (16–50) 2017: ${d3.format(".1f")(extra.birthRate2017)}`);
+        if(Number.isFinite(extra.fedSpending2009)) lines.push(`Fed spending 2009: ${fmtDollar(extra.fedSpending2009)}`);
+      }
+      return lines.join("<br/>");
+    }
+
+    // ---------- Size / responsiveness ----------
+    function containerRebuild(){
+      WIDTH = containerWidth(); HEIGHT = Math.round(WIDTH * 0.62);
+      if(svgRoot) svgRoot.remove();
+      projection = d3.geoAlbersUsa().fitSize([WIDTH, HEIGHT], statesTopo || {type:"FeatureCollection", features:[]});
+      path = d3.geoPath(projection);
+      svgRoot = d3.select("#map").append("svg").attr("width", WIDTH).attr("height", HEIGHT);
+      if(currentLevel==='state') drawStates(statesTopo);
+      else if(currentLevel==='county') drawCounties(countiesTopo);
+      else drawScatter(false);
+      drawLegend();
+    }
+    window.addEventListener('resize', () => { containerRebuild(); });
+
+    // ---------- Main init ----------
+    async function init(){
+      try{
+        const tryJSON = async (pList) => {
+          for(const p of pList){
+            try{ const r = await fetch(p, {cache:"no-store"}); if(r.ok) return await r.json(); }catch(e){}
+          }
+          throw new Error(`Failed to load JSON from ${pList.join(", ")}`);
+        };
+
+        // Prefer /data subfolder, fallback to root
+        const [stateData, countyData, countyByNameData, usStates, usCounties] = await Promise.all([
+          tryJSON(["data/state_life_expectancy.json","state_life_expectancy.json"]),
+          tryJSON(["data/county_life_expectancy_by_state.json","county_life_expectancy_by_state.json"]),
+          tryJSON(["data/county_life_expectancy_normalized.json","county_life_expectancy_normalized.json"]),
+          fetch("https://unpkg.com/us-atlas@3/states-10m.json").then(r=>r.json()),
+          fetch("https://unpkg.com/us-atlas@3/counties-10m.json").then(r=>r.json())
+        ]);
+        stateValues = stateData; countySummaries = countyData; countyByName = countyByNameData;
+
+        // Load extras (OpenIntro + 2016 & 2020 election)
+        extrasPromise = Promise.all([loadCountyExtra(), loadElection2016(), loadElection2020()]);
+
+        // FIPS → LE
+        const tryFipsJSON = async () => {
+          const candidates = ["data/county_life_expectancy_by_fips.json","county_life_expectancy_by_fips.json"];
+          for(const p of candidates){
+            try{ const r = await fetch(p, {cache:"no-store"}); if(r.ok) return await r.json(); }catch(e){}
+          }
+          return {};
+        };
+        let fipsJson = await tryFipsJSON();
+        const nKeys = Object.keys(fipsJson).length;
+        if(nKeys){ console.log(`Loaded precomputed FIPS JSON with ${nKeys} counties`); }
+        if(nKeys < 1000){ console.warn("Precomputed FIPS JSON missing/too small; deriving from names."); fipsJson = {}; }
+
+        fipsCross = await loadCrosswalk();
+        if(Object.keys(fipsJson).length){
+          countyFipsValue = new Map(Object.entries(fipsJson).map(([k,v]) => [k.padStart(5,'0'), +v]));
+        }else{
+          const byKey = new Map();
+          countyByName.forEach(d => { if(Number.isFinite(+d.life_expectancy)){ byKey.set(normKey(d.state,d.county), +d.life_expectancy); } });
+          const map = new Map(); let rows=0, matched=0;
+          for(const row of fipsCross){ rows++; const v = byKey.get(normKey(row.state_name,row.county_name)); if(Number.isFinite(v)){ matched++; map.set(row.fips, v); } }
+          console.log(`Derived county values from names: matched ${matched} of ${rows} crosswalk rows`);
+          countyFipsValue = map;
+        }
+
+        // Topo
+        statesTopo = topojson.feature(usStates, usStates.objects.states);
+        countiesTopo = topojson.feature(usCounties, usCounties.objects.counties);
+
+        projection = d3.geoAlbersUsa().fitSize([WIDTH, HEIGHT], statesTopo);
+        path = d3.geoPath(projection);
+
+        setColorScaleDomainAuto();
+        colorScale = d3.scaleSequential().domain([+minEl.value, +maxEl.value]).interpolator(makePalette(palEl.value));
+
+        svgRoot = d3.select("#map").append("svg").attr("width", WIDTH).attr("height", HEIGHT);
+
+        // Populate state filter (in settings)
+        ALL_STATE_NAMES.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s;
+          opt.textContent = s;
+          stateFilter.appendChild(opt);
+        });
+
+        // Draw initial
+        drawStates(statesTopo);
+        drawLegend();
+
+        // Settings collapsible
+        settingsToggle.addEventListener('click', () => {
+          const open = settingsContent.classList.toggle('show');
+          settingsToggle.setAttribute('aria-expanded', open ? "true" : "false");
+          chevron.textContent = open ? "▾" : "▸";
+        });
+
+        // Top-level controls
+        levelEl.addEventListener('change', () => {
+          currentLevel = levelEl.value;
+          const isScatter = currentLevel === 'scatter';
+          xVarWrap.classList.toggle('hidden', !isScatter);
+          scatterSettings.classList.toggle('hidden', !isScatter);
+          setColorScaleDomainAuto(); recolor(); drawLegend();
+          if(isScatter){ drawScatter(false); }
+        });
+        xVarSel.addEventListener('change', () => { if(currentLevel==='scatter'){ drawScatter(true); } });
+
+        // Settings actions
+        applyBtn.addEventListener('click', () => {
+          recolor(); drawLegend();
+          if(currentLevel==='scatter'){ drawScatter(true); }
+        });
+        autoBtn.addEventListener('click', () => {
+          setColorScaleDomainAuto(); recolor(); drawLegend();
+          if(currentLevel==='scatter'){ drawScatter(true); }
+        });
+        regToggle.addEventListener('change', () => { if(currentLevel==='scatter'){ drawScatter(false,true); } });
+        stateFilter.addEventListener('change', () => { if(currentLevel==='scatter'){ drawScatter(true); } });
+        resetZoomBtn.addEventListener('click', () => { if(currentLevel==='scatter'){ resetScatterZoom(); } });
+
+        // Sidebar interactions
+        countySelect.addEventListener('change', (e) => {
+          const fips = e.target.value; if(!fips) return;
+          const name = lookupCountyName(fips);
+          const v = countyFipsValue.get(fips);
+          sideTitle.textContent = name;
+          sideLE.textContent = Number.isFinite(v) ? `Life expectancy: ${v}` : "—";
+        });
+        document.addEventListener('touchstart', () => { tip.style.opacity = 0; }, {passive:true});
+
+        console.log("App ready");
+      }catch(err){
+        console.error("Init error:", err);
+        document.getElementById('map').innerHTML = `<div class="muted">Failed to load view. See Console.<br>${err}</div>`;
+      }
+    }
+
+    // ---------- Draw state & county maps ----------
+    function drawStates(states){
+      svgRoot.selectAll("*").remove();
+      svgRoot.append("g").selectAll("path").data(states.features).join("path")
+        .attr("d", path)
+        .attr("fill", d => {
+          const name = FIPS_TO_NAME[d.id.toString().padStart(2,'0')];
+          const v = stateValues[name];
+          return Number.isFinite(v) ? colorScale(v) : "#2a335f";
+        })
+        .attr("stroke", "#1b254d").attr("stroke-width", 0.8)
+        .on("mousemove", (event, d) => {
+          const name = FIPS_TO_NAME[d.id.toString().padStart(2,'0')]; const v = stateValues[name];
+          tip.style.left = event.pageX + "px"; tip.style.top  = event.pageY + "px";
+          tip.innerHTML = `<strong>${name || "(unknown)"}</strong>` + (Number.isFinite(v) ? `<br/><strong>LE: ${d3.format(".2f")(v)} years</strong>` : `<br/><span class="muted"><strong>LE:</strong> No data</span>`);
+          tip.style.opacity = 1;
+        }).on("mouseleave", () => { tip.style.opacity = 0; })
+        .on("click", (event, d) => { selectStateInSidebar(FIPS_TO_NAME[d.id.toString().padStart(2,'0')]); });
+    }
+    function drawCounties(counties){
+      svgRoot.selectAll("*").remove();
+      svgRoot.append("g").selectAll("path").data(counties.features).join("path")
+        .attr("d", path)
+        .attr("fill", d => {
+          const fips = d.id.toString().padStart(5,'0');
+          const v = countyFipsValue.get(fips);
+          return Number.isFinite(v) ? colorScale(v) : "#2a335f";
+        })
+        .attr("stroke", "#1b254d").attr("stroke-width", 0.2)
+        .on("mousemove", (event, d) => {
+          const fips = d.id.toString().padStart(5,'0'); const v = countyFipsValue.get(fips);
+          tip.style.left = event.pageX + "px"; tip.style.top  = event.pageY + "px";
+          tip.innerHTML = countyTooltipHTML(fips, v);
+          tip.style.opacity = 1;
+        }).on("mouseleave", () => { tip.style.opacity = 0; })
+        .on("click", (event, d) => {
+          const stateName = FIPS_TO_NAME[d.id.toString().padStart(5,'0').slice(0,2)];
+          if(stateName){ selectStateInSidebar(stateName); }
+        });
+    }
+
+    // ---------- Scatterplot (optimized updates) ----------
+    function getSelectedStates(){
+      const chosen = Array.from(stateFilter.selectedOptions).map(o => o.value);
+      if(chosen.length === 0) return null; // null = all
+      return new Set(chosen);
+    }
+    function buildScatterData(xKey){
+      const data = [];
+      countyFipsValue.forEach((le, fips) => {
+        const extra = countyExtra.get(fips);
+        if(!extra) return;
+        const st2 = fips.slice(0,2);
+        const stName = FIPS_TO_NAME[st2];
+        const stateSet = getSelectedStates();
+        if(stateSet && !stateSet.has(stName)) return;
+
+        let x = NaN;
+        if(xKey === "e2016_margin"){
+          x = election2016.get(fips);
+        } else if(xKey === "e2020_margin"){
+          x = election2020.get(fips);
+        } else {
+          x = +extra[xKey];
+        }
+        const pop = +extra.pop;
+        if(Number.isFinite(le) && Number.isFinite(x) && Number.isFinite(pop) && pop>0){
+          data.push({fips, le, x, pop, name: lookupCountyName(fips), stName});
+        }
+      });
+      return data;
+    }
+    function linearRegression(data){
+      const n = data.length;
+      if(n < 2) return null;
+      let sx=0, sy=0, sxx=0, syy=0, sxy=0;
+      for(const d of data){ sx+=d.x; sy+=d.le; sxx+=d.x*d.x; syy+=d.le*d.le; sxy+=d.x*d.le; }
+      const denom = (n*sxx - sx*sx);
+      if(denom === 0) return null;
+      const slope = (n*sxy - sx*sy) / denom;
+      const intercept = (sy - slope*sx)/n;
+      const meanY = sy/n;
+      let ssTot=0, ssRes=0;
+      for(const d of data){
+        const fit = slope*d.x + intercept;
+        ssTot += (d.le - meanY)**2;
+        ssRes += (d.le - fit)**2;
+      }
+      const r2 = ssTot>0 ? 1 - ssRes/ssTot : 0;
+      return {slope, intercept, r2};
+    }
+    function resetScatterZoom(){
+      if(!scatter) return;
+      const {xOrig, yOrig, gX, gY, dots} = scatter;
+      const x = xOrig.copy(), y = yOrig.copy();
+      gX.transition().duration(180).call(d3.axisBottom(x).ticks(8)).selectAll("text").attr("fill","var(--muted)");
+      gY.transition().duration(180).call(d3.axisLeft(y).ticks(8)).selectAll("text").attr("fill","var(--muted)");
+      dots.interrupt().transition().duration(180).attr("cx", d=>x(d.x)).attr("cy", d=>y(d.le));
+      const margins = d3.select("#map svg g.scatter-root").select(".scatter-margins");
+      if(margins.node() && zoomBehavior){
+        margins.call(zoomBehavior.transform, d3.zoomIdentity);
+      }
+      if(scatter.regLine){ scatter.regLine.remove(); scatter.regLine = null; }
+      if(scatter.regLabel){ scatter.regLabel.remove(); scatter.regLabel = null; }
+      if(regToggle.checked){ drawRegression({...scatter, x, y}); }
+      scatter.x = x; scatter.y = y; scatter.zoomTransform = d3.zoomIdentity;
+    }
+    function drawRegression(ctx){
+      const {data, x, y, innerW, plot} = ctx;
+      if(ctx.regLine){ ctx.regLine.remove(); ctx.regLine=null; }
+      if(ctx.regLabel){ ctx.regLabel.remove(); ctx.regLabel=null; }
+      const lr = linearRegression(data);
+      if(!lr) return;
+      const xDomain = x.domain();
+      const p1 = {x: xDomain[0], y: lr.slope*xDomain[0] + lr.intercept};
+      const p2 = {x: xDomain[1], y: lr.slope*xDomain[1] + lr.intercept};
+      ctx.regLine = plot.append("line")
+        .attr("x1", x(p1.x)).attr("y1", y(p1.y))
+        .attr("x2", x(p2.x)).attr("y2", y(p2.y))
+        .attr("stroke", "#eaeefc").attr("stroke-width", 1.2).attr("opacity", 0.9);
+      ctx.regLabel = plot.append("text")
+        .attr("x", innerW - 8).attr("y", 16)
+        .attr("text-anchor","end").attr("fill","var(--muted)")
+        .text(`R² = ${d3.format(".3f")(lr.r2)}`);
+    }
+
+    async function drawScatter(animateDots=false, onlyRegression=false){
+      await extrasPromise;
+
+      // Clear and create a persistent root for scatter layers
+      svgRoot.selectAll("*").remove();
+      const root = svgRoot.append("g").attr("class","scatter-root");
+
+      // Structure
+      root.append("g").attr("class","scatter-margins");
+      root.append("g").attr("class","x-axis");
+      root.append("g").attr("class","y-axis");
+      root.append("text").attr("class","x-label").attr("text-anchor","middle").attr("fill","var(--muted)");
+      root.append("text").attr("class","y-label").attr("text-anchor","middle").attr("fill","var(--muted)");
+      root.append("g").attr("class","plot");
+
+      const margin = {top:20,right:28,bottom:56,left:58};
+      const w = WIDTH, h = HEIGHT;
+      const innerW = w - margin.left - margin.right;
+      const innerH = h - margin.top - margin.bottom;
+
+      const marginsG = root.select(".scatter-margins")
+                           .attr("transform", `translate(${margin.left},${margin.top})`);
+      const gX = root.select(".x-axis").attr("transform", `translate(${margin.left},${margin.top+innerH})`);
+      const gY = root.select(".y-axis").attr("transform", `translate(${margin.left},${margin.top})`);
+      const xLabelNode = root.select(".x-label");
+      const yLabelNode = root.select(".y-label");
+      const plot = root.select(".plot").attr("transform", `translate(${margin.left},${margin.top})`);
+
+      const keyMap = {
+        pcIncome:"pcIncome", medAge:"medAge", pct65:"pct65", pctUnder5:"pctUnder5",
+        hsGrad:"hsGrad", pctBach:"pctBach", pctVets:"pctVets", poverty:"poverty", unemp:"unemp",
+        mhi2016:"mhi2016", density2010:"density2010", birthRate2017:"birthRate2017", fedSpending2009:"fedSpending2009",
+        e2016_margin:"e2016_margin", e2020_margin:"e2020_margin"
+      };
+      const xKey = keyMap[xVarSel.value];
+      const xLabel = VAR_LABELS[xVarSel.value] || xVarSel.value;
+
+      const data = buildScatterData(xKey);
+      if(!data.length){
+        plot.append("text").attr("x", innerW/2).attr("y", innerH/2).attr("text-anchor","middle").attr("fill","var(--muted)").text("No data for selected variable / states");
+        scatterPrev.clear();
+        scatter = null;
+        return;
+      }
+      const tooMany = data.length > ANIM_THRESHOLD;
+      const shouldAnimate = animateDots && !tooMany;
+
+      const xExtent = d3.extent(data, d=>d.x);
+      const yExtent = d3.extent(data, d=>d.le);
+      const xPad = (xExtent[1]-xExtent[0]) * 0.05;
+      const yPad = (yExtent[1]-yExtent[0]) * 0.05;
+
+      const xOrig = d3.scaleLinear().domain([xExtent[0]-xPad, xExtent[1]+xPad]).range([0, innerW]);
+      const yOrig = d3.scaleLinear().domain([yExtent[0]-yPad, yExtent[1]+yPad]).range([innerH, 0]);
+
+      // If we had a previous zoom, apply it to keep continuity
+      const prev = scatter;
+      const prevTransform = prev && prev.zoomTransform ? prev.zoomTransform : d3.zoomIdentity;
+      const x = prevTransform.rescaleX(xOrig);
+      const y = prevTransform.rescaleY(yOrig);
+
+      const r = d3.scaleSqrt().domain(d3.extent(data, d=>d.pop)).range([2, Math.max(8, Math.min(16, Math.round(innerW/60)))]);
+
+      gX.call(d3.axisBottom(x).ticks((w<420)?5:8)).selectAll("text").attr("fill","var(--muted)");
+      gY.call(d3.axisLeft(y).ticks((h<420)?5:8)).selectAll("text").attr("fill","var(--muted)");
+      root.selectAll(".domain,line").attr("stroke","var(--border)");
+
+      xLabelNode.attr("x", margin.left + innerW/2).attr("y", margin.top + innerH + 42).text(xLabel);
+      yLabelNode.attr("transform", `translate(${margin.left - 46},${margin.top + innerH/2}) rotate(-90)`).text("Life expectancy");
+
+      // Join
+      let dots = plot.selectAll("circle").data(data, d=>d.fips);
+
+      // ENTER
+      const enter = dots.enter().append("circle")
+        .attr("cx", d => scatterPrev.has(d.fips) ? scatterPrev.get(d.fips).x : x(d.x))
+        .attr("cy", d => scatterPrev.has(d.fips) ? scatterPrev.get(d.fips).y : y(d.le))
+        .attr("r",  d => scatterPrev.has(d.fips) ? scatterPrev.get(d.fips).r : r(d.pop))
+        .attr("fill", d=>colorScale(d.le))
+        .attr("stroke", "#1b254d")
+        .attr("opacity", 0.9);
+
+      dots = enter.merge(dots);
+
+      // UPDATE
+      dots.interrupt();
+      if(shouldAnimate){
+        dots.transition().duration(TRANSITION_MS).ease(d3.easeLinear)
+          .attr("cx", d=>x(d.x))
+          .attr("cy", d=>y(d.le))
+          .attr("r", d=>r(d.pop));
+      }else{
+        dots.attr("cx", d=>x(d.x)).attr("cy", d=>y(d.le)).attr("r", d=>r(d.pop));
+      }
+
+      // EXIT
+      dots.exit().interrupt().remove();
+
+      // Interactions
+      dots.on("mousemove", (event, d) => {
+          tip.style.left = event.pageX + "px"; tip.style.top  = event.pageY + "px";
+          let xv;
+          if(xVarSel.value==="pcIncome" || xVarSel.value==="mhi2016" || xVarSel.value==="fedSpending2009"){
+            xv = Number.isFinite(d.x)? "$"+d3.format(",")(Math.round(d.x)):"—";
+          }else if(xVarSel.value==="medAge"){
+            xv = Number.isFinite(d.x)? d3.format(".1f")(d.x):"—";
+          }else if(xVarSel.value==="density2010"){
+            xv = Number.isFinite(d.x)? d3.format(",.0f")(d.x)+" /sq mi":"—";
+          }else if(xVarSel.value==="birthRate2017"){
+            xv = Number.isFinite(d.x)? d3.format(".1f")(d.x):"—";
+          }else if(xVarSel.value==="e2016_margin" || xVarSel.value==="e2020_margin"){
+            xv = Number.isFinite(d.x)? fmtSigned1(d.x)+" pp":"—";
+          }else{
+            xv = Number.isFinite(d.x)? d3.format(".1f")(d.x)+"%":"—";
+          }
+          tip.innerHTML = `<strong>${d.name}</strong><br/><strong>LE: ${d3.format(".2f")(d.le)} years</strong><br/>${xLabel}: ${xv}<br/>Population: ${fmtNum(d.pop)}`;
+          tip.style.opacity = 1;
+        })
+        .on("mouseleave", () => { tip.style.opacity = 0; });
+
+      // Regression (after axes finalized)
+      let regLine=null, regLabel=null;
+      if(!onlyRegression && regToggle.checked){
+        const ctx = {data, x, y, innerW, innerH, plot, gX, gY, dots, regLine:null, regLabel:null};
+        drawRegression(ctx);
+        regLine = ctx.regLine; regLabel = ctx.regLabel;
+      }
+      if(onlyRegression){
+        const ctx = {data, x, y, innerW, innerH, plot, gX, gY, dots, regLine:null, regLabel:null};
+        drawRegression(ctx);
+        regLine = ctx.regLine; regLabel = ctx.regLabel;
+      }
+
+      // Zoom/pan
+      if(!zoomBehavior){
+        zoomBehavior = d3.zoom()
+          .scaleExtent([1, 20])
+          .translateExtent([[0,0], [innerW, innerH]])
+          .extent([[0,0], [innerW, innerH]])
+          .on("zoom", (event) => {
+            const zx = event.transform.rescaleX(xOrig);
+            const zy = event.transform.rescaleY(yOrig);
+            gX.call(d3.axisBottom(zx).ticks((w<420)?5:8)).selectAll("text").attr("fill","var(--muted)");
+            gY.call(d3.axisLeft(zy).ticks((h<420)?5:8)).selectAll("text").attr("fill","var(--muted)");
+            dots.attr("cx", d=>zx(d.x)).attr("cy", d=>zy(d.le));
+            if(regLine){ regLine.remove(); regLine=null; }
+            if(regLabel){ regLabel.remove(); regLabel=null; }
+            if(regToggle.checked){
+              drawRegression({data, x:zx, y:zy, innerW, innerH, plot, gX, gY, dots, regLine:null, regLabel:null});
+            }
+            scatter.zoomTransform = event.transform;
+          });
+      }
+      root.select(".scatter-margins").call(zoomBehavior);
+      if(prevTransform && prevTransform !== d3.zoomIdentity){
+        root.select(".scatter-margins").call(zoomBehavior.transform, prevTransform);
+      }
+
+      // Save positions for next transition
+      scatterPrev.clear();
+      dots.each(function(d){
+        scatterPrev.set(d.fips, { x: +this.getAttribute("cx"), y: +this.getAttribute("cy"), r: +this.getAttribute("r") });
+      });
+
+      scatter = { x, y, xOrig, yOrig, gX, gY, dots, plot, regLine, regLabel, prevPos: scatterPrev, innerW, innerH, zoomTransform: prevTransform };
+    }
+
+    // ---------- Recolor / redraw ----------
+    function recolor(){
+      colorScale = d3.scaleSequential()
+        .domain([+minEl.value, +maxEl.value])
+        .interpolator(makePalette(palEl.value));
+
+      if(currentLevel === 'state'){
+        drawStates(statesTopo);
+      }else if(currentLevel === 'county'){
+        drawCounties(countiesTopo);
+      }else{
+        if(scatter && scatter.dots){
+          scatter.dots.attr("fill", d=>colorScale(d.le));
+        }else{
+          drawScatter(false);
+        }
+      }
+    }
+
+    // ---------- Boot ----------
+    init();
+  </script>
+</body>
+</html>
