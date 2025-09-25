@@ -20,6 +20,8 @@ It's even worse if we look at more recent data: In 2020, The life expectancy in 
 The enormous heterogeneity in outcomes is even larger if we look at counties instead of states.
 For example Summit County, Colorado has one of the highest LE at 86.83 years, better than Hong Kong 🇭🇰 (the best in the world; 85.5 yrs). Oglala Lakota County, South Dakota, has one of the shortest life expectancies at 66.81 years, which is slightly worse than Myanmar 🇲🇲 (171st place at 66.8 years).
 
+But why is there so much variability in Life Expectancy? Is this an inevitable consequence of looking at 3,142 counties? Or are there systemic factors that can explain this?
+
 ![image](https://user-images.githubusercontent.com/48685552/233850467-1167d92b-96f5-4b90-9e61-e5081903e335.png)
 
 ## Why is life expectancy in the US so variable?
