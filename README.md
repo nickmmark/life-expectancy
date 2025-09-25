@@ -25,6 +25,10 @@ For example Summit County, Colorado has one of the highest LE at 86.83 years, be
 ## Why is life expectancy in the US so variable?
 
 
+# Demo
+You can interact with the site [here](https://nickmmark.github.io/life-expectancy/)
+
+
 # ⚙️ Implementation
 Interactive D3.js visualizations of U.S. life expectancy at birth (2010–2015) with county-level context and exploratory scatterplots versus demographics and election results.
 
