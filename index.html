@@ -135,6 +135,7 @@
           <option value="pctVets">Veterans (%)</option>
           <option value="poverty">Below Federal Poverty Line (%)</option>
           <option value="unemp">Unemployment (%)</option>
+          <option value="uninsured">Uninsured (%)</option>
           <option value="density2010">Population density (people/km)</option>
           <option value="fedSpending2009">Federal spending ($)</option>
           <option value="e2016_margin">2016 election margin (R–D, %)</option>
@@ -315,6 +316,7 @@
       pctVets: "Veterans %",
       poverty: "Poverty %",
       unemp: "Unemployment %",
+      uninsured: "Uninsured %",
       mhi2016: "Median household income (2016)",
       density2010: "Population density (2010)",
       birthRate2017: "Birth rate 16–50 (2017)",
@@ -532,6 +534,7 @@
         const colPci  = findColCI(cols, ["per_capita_income_2017","per_capita_income","per capita income"]);
         const colPov  = findColCI(cols, ["poverty_2017","poverty"]);
         const colUnemp= findColCI(cols, ["unemployment_rate_2017","unemployment_rate","unemployment","unemp_rate"]);
+        const colUnins= findColCI(cols, ["uninsured_2017","uninsured rate 2017","uninsured"]); // NEW
 
         // Extra variables
         const colMHI  = findColCI(cols, ["median_household_income_2016","median household income 2016","median_household_income"]);
@@ -553,6 +556,7 @@
             pcIncome: +(row[colPci] ?? NaN),
             poverty: +(row[colPov] ?? NaN),
             unemp: +(row[colUnemp] ?? NaN),
+            uninsured: +(row[colUnins] ?? NaN), // NEW
             mhi2016: +(row[colMHI] ?? NaN),
             density2010: +(row[colDens] ?? NaN),
             birthRate2017: +(row[colBirth] ?? NaN),
@@ -647,6 +651,7 @@
         if(Number.isFinite(extra.pcIncome)) lines.push(`Per capita income (latest): ${fmtDollar(extra.pcIncome)}`);
         if(Number.isFinite(extra.poverty)) lines.push(`Poverty (latest): ${fmtPct(extra.poverty)}`);
         if(Number.isFinite(extra.unemp)) lines.push(`Unemployment (latest): ${fmtPct(extra.unemp)}`);
+        if(Number.isFinite(extra.uninsured)) lines.push(`Uninsured (latest): ${fmtPct(extra.uninsured)}`); /* NEW */
         if(Number.isFinite(extra.mhi2016)) lines.push(`Median HH income 2016: ${fmtDollar(extra.mhi2016)}`);
         if(Number.isFinite(extra.density2010)) lines.push(`Density 2010: ${d3.format(",.0f")(extra.density2010)} /sq mi`);
         if(Number.isFinite(extra.birthRate2017)) lines.push(`Birth rate (16–50) 2017: ${d3.format(".1f")(extra.birthRate2017)}`);
@@ -949,8 +954,7 @@
       const innerW = w - margin.left - margin.right;
       const innerH = h - margin.top - margin.bottom;
 
-      const marginsG = root.select(".scatter-margins")
-                           .attr("transform", `translate(${margin.left},${margin.top})`);
+      root.select(".scatter-margins").attr("transform", `translate(${margin.left},${margin.top})`);
       const gX = root.select(".x-axis").attr("transform", `translate(${margin.left},${margin.top+innerH})`);
       const gY = root.select(".y-axis").attr("transform", `translate(${margin.left},${margin.top})`);
       const xLabelNode = root.select(".x-label");
@@ -959,7 +963,7 @@
 
       const keyMap = {
         pcIncome:"pcIncome", medAge:"medAge", pct65:"pct65", pctUnder5:"pctUnder5",
-        hsGrad:"hsGrad", pctBach:"pctBach", pctVets:"pctVets", poverty:"poverty", unemp:"unemp",
+        hsGrad:"hsGrad", pctBach:"pctBach", pctVets:"pctVets", poverty:"poverty", unemp:"unemp", uninsured:"uninsured",
         mhi2016:"mhi2016", density2010:"density2010", birthRate2017:"birthRate2017", fedSpending2009:"fedSpending2009",
         e2016_margin:"e2016_margin", e2020_margin:"e2020_margin"
       };
@@ -1030,19 +1034,19 @@
       // Interactions
       dots.on("mousemove", (event, d) => {
           tip.style.left = event.pageX + "px"; tip.style.top  = event.pageY + "px";
+          // Determine tooltip format for X
           let xv;
-          if(xVarSel.value==="pcIncome" || xVarSel.value==="mhi2016" || xVarSel.value==="fedSpending2009"){
-            xv = Number.isFinite(d.x)? "$"+d3.format(",")(Math.round(d.x)):"—";
-          }else if(xVarSel.value==="medAge"){
-            xv = Number.isFinite(d.x)? d3.format(".1f")(d.x):"—";
-          }else if(xVarSel.value==="density2010"){
-            xv = Number.isFinite(d.x)? d3.format(",.0f")(d.x)+" /sq mi":"—";
-          }else if(xVarSel.value==="birthRate2017"){
-            xv = Number.isFinite(d.x)? d3.format(".1f")(d.x):"—";
-          }else if(xVarSel.value==="e2016_margin" || xVarSel.value==="e2020_margin"){
-            xv = Number.isFinite(d.x)? fmtSigned1(d.x)+" pp":"—";
+          const key = xVarSel.value;
+          if(key==="pcIncome" || key==="mhi2016" || key==="fedSpending2009"){
+            xv = Number.isFinite(d.x)? "$"+d3.format(",")(Math.round(d.x)) : "—";
+          }else if(key==="medAge" || key==="birthRate2017"){
+            xv = Number.isFinite(d.x)? d3.format(".1f")(d.x) : "—";
+          }else if(key==="density2010"){
+            xv = Number.isFinite(d.x)? d3.format(",.0f")(d.x)+" /sq mi" : "—";
+          }else if(key==="e2016_margin" || key==="e2020_margin"){
+            xv = Number.isFinite(d.x)? fmtSigned1(d.x)+" pp" : "—";
           }else{
-            xv = Number.isFinite(d.x)? d3.format(".1f")(d.x)+"%":"—";
+            xv = Number.isFinite(d.x)? d3.format(".1f")(d.x)+"%" : "—";
           }
           tip.innerHTML = `<strong>${d.name}</strong><br/><strong>LE: ${d3.format(".2f")(d.le)} years</strong><br/>${xLabel}: ${xv}<br/>Population: ${fmtNum(d.pop)}`;
           tip.style.opacity = 1;
