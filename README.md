@@ -26,25 +26,37 @@ For example Summit County, Colorado has one of the highest LE at 86.83 years, be
 
 
 # Implementation
-## Data Sources
+## 💾 Data Sources
 This app combines data from multiple sources:
-* [CDC/US Small-Area Life Expectancy Estimates](https://www.cdc.gov/nchs/nvss/usaleep/usaleep.html)
-* [US County Level Election Results](https://github.com/tonmcg/US_County_Level_Election_Results_08-24)
-* [OpenIntro County Complete Data](https://www.openintro.org/data/?data=county_complete)
+* Life expectancy (2010-2015): [CDC/US Small-Area Life Expectancy Estimates](https://www.cdc.gov/nchs/nvss/usaleep/usaleep.html)
+* Election results: [US County Level Election Results](https://github.com/tonmcg/US_County_Level_Election_Results_08-24)
+* Economic/demographic data: [OpenIntro County Complete Data](https://www.openintro.org/data/?data=county_complete)
+* County name/FIPS crosswalk: [Kieran Healy’s FIPS master](https://github.com/kjhealy/fips-codes) --> state_and_county_fips_master.csv or local fips_crosswalk.csv.
+* Geometries: [us-atlas TopoJSON](https://github.com/topojson/us-atlas) (states-10m, counties-10m).
+
 
 ## ⚙️ Implementation
+* Joining life expectancy to counties:
+  * Use FIPS-keyed map (county_life_expectancy_by_fips.json) if present or derive from name-keyed CDC county data: normalize county/state strings (strip accents, convert “St.”→“Saint”, remove “County/Parish/City & Borough/Census Area/Municipality” suffixes, collapse whitespace) and join via crosswalk → FIPS.
+* County metadata: Load OpenIntro file and map by zero-padded 5-digit FIPS; accept flexible column headers (robust matching to handle variants).
+* Election margins: Parse 2016/2020 CSVs; compute margin = GOP% − DEM% in percentage points. Accept either % or proportions; auto-convert to pp.
+* For Robustness: Flexible header detection for external CSVs; fallback name join if precomputed FIPS JSON is absent; manual fixes for a few CA county labels.
 
+### 🗺️ Visualization:
+* Maps (state & county): D3 + TopoJSON (geoAlbersUsa), sequential color (default Red→Blue for low→high LE), legend with numeric scale, tooltips with bold LE (years) and county extras.
+* Scatterplots: Life expectancy (y) vs chosen x-variable (demographics or 2016/2020 margin). Each dot = county, radius ∝ population. Wheel/pinch zoom + pan, Reset zoom, optional OLS regression line + R² (checkbox), state filter (multi-select). Tooltips show county name, LE (years), x-value (with units), and population.
 
 ## 📁 Files
 ```
-index.html
-state_life_expectancy.json
-county_life_expectancy_normalized.json
-county_life_expectancy_by_fips.json
-county_complete.csv
-2016_US_County_Level_Presidential_Results.csv
-2020_US_County_Level_Presidential_Results.csv
-fips_crosswalk.csv
+life-expectancy-web-app
+├─ index.html
+├─ state_life_expectancy.json
+├─ county_life_expectancy_normalized.json
+├─ county_life_expectancy_by_fips.json
+├─ county_complete.csv
+├─ 2016_US_County_Level_Presidential_Results.csv
+├─ 2020_US_County_Level_Presidential_Results.csv
+└─ fips_crosswalk.csv
 ```
 
 # 📚️ References
