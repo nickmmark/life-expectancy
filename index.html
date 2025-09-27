@@ -358,20 +358,56 @@
     }
     function normKey(state, county){ return (stripAccents(canonStateName(state)).toUpperCase() + "|" + normCountyName(county).toUpperCase()); }
 
-    // ---------- Legend ----------
-    function setColorScaleDomainAuto(){
-      const vals = (currentLevel === 'state')
-        ? Object.values(stateValues).map(Number).filter(Number.isFinite)
-        : Array.from(countyFipsValue.values()).filter(Number.isFinite);
-      if(vals.length){
-        minEl.value = Math.floor(d3.min(vals)*10)/10;
-        maxEl.value = Math.ceil(d3.max(vals)*10)/10;
+    // ---------- Legend / color domain ----------
+    async function updateScaleAndLegend(auto=true){
+      // compute suggested domain from current view
+      if(auto){
+        let vals = [];
+        if(currentLevel === 'state'){
+          vals = Object.values(stateValues).map(Number).filter(Number.isFinite);
+        }else if(currentLevel === 'county'){
+          vals = Array.from(countyFipsValue.values()).filter(Number.isFinite);
+        }else{
+          // scatter: use life expectancy values of filtered scatter data
+          if(extrasPromise) await extrasPromise;
+          const keyMap = {
+            pcIncome:"pcIncome", medAge:"medAge", pct65:"pct65", pctUnder5:"pctUnder5",
+            hsGrad:"hsGrad", pctBach:"pctBach", pctVets:"pctVets", poverty:"poverty", unemp:"unemp", uninsured:"uninsured",
+            mhi2016:"mhi2016", density2010:"density2010", birthRate2017:"birthRate2017", fedSpending2009:"fedSpending2009",
+            e2016_margin:"e2016_margin", e2020_margin:"e2020_margin"
+          };
+          const data = buildScatterData(keyMap[xVarSel.value]);
+          vals = data.map(d=>d.le).filter(Number.isFinite);
+        }
+        if(vals.length){
+          minEl.value = Math.floor(d3.min(vals)*10)/10;
+          maxEl.value = Math.ceil(d3.max(vals)*10)/10;
+        }
+      }
+      colorScale = d3.scaleSequential()
+        .domain([+minEl.value, +maxEl.value])
+        .interpolator(makePalette(palEl.value));
+
+      // Redraw legend
+      drawLegend();
+
+      // If svgRoot isn't ready yet, stop here (prevents crash during early init)
+      if(!svgRoot) return;
+
+      // Recolor current layer
+      if(currentLevel === 'scatter' && scatter && scatter.dots){
+        scatter.dots.attr("fill", d=>colorScale(d.le));
+      }else if(currentLevel === 'state'){
+        drawStates(statesTopo);
+      }else if(currentLevel === 'county'){
+        drawCounties(countiesTopo);
       }
     }
+
     function drawLegend(){
       const min = +minEl.value, max = +maxEl.value;
       const node = document.getElementById('legend');
-      const w = node.getBoundingClientRect().width || 600; // reliable on iOS
+      const w = node.getBoundingClientRect().width || 600;
       const h = node.clientHeight || 56;
       const margin = {left:40,right:40,top:6,bottom:20};
       const innerW = w - margin.left - margin.right;
@@ -651,7 +687,7 @@
         if(Number.isFinite(extra.pcIncome)) lines.push(`Per capita income (latest): ${fmtDollar(extra.pcIncome)}`);
         if(Number.isFinite(extra.poverty)) lines.push(`Poverty (latest): ${fmtPct(extra.poverty)}`);
         if(Number.isFinite(extra.unemp)) lines.push(`Unemployment (latest): ${fmtPct(extra.unemp)}`);
-        if(Number.isFinite(extra.uninsured)) lines.push(`Uninsured (latest): ${fmtPct(extra.uninsured)}`); /* NEW */
+        if(Number.isFinite(extra.uninsured)) lines.push(`Uninsured (latest): ${fmtPct(extra.uninsured)}`);
         if(Number.isFinite(extra.mhi2016)) lines.push(`Median HH income 2016: ${fmtDollar(extra.mhi2016)}`);
         if(Number.isFinite(extra.density2010)) lines.push(`Density 2010: ${d3.format(",.0f")(extra.density2010)} /sq mi`);
         if(Number.isFinite(extra.birthRate2017)) lines.push(`Birth rate (16–50) 2017: ${d3.format(".1f")(extra.birthRate2017)}`);
@@ -665,7 +701,6 @@
       WIDTH  = getMapWidth();
       HEIGHT = Math.round(WIDTH * 0.62);
 
-      // Rebuild projection + SVG with a responsive viewBox
       if (svgRoot) svgRoot.remove();
       projection = d3.geoAlbersUsa().fitSize([WIDTH, HEIGHT], statesTopo || {type:"FeatureCollection",features:[]});
       path = d3.geoPath(projection);
@@ -744,9 +779,17 @@
         statesTopo = topojson.feature(usStates, usStates.objects.states);
         countiesTopo = topojson.feature(usCounties, usCounties.objects.counties);
 
-        // Color scale
-        setColorScaleDomainAuto();
-        colorScale = d3.scaleSequential().domain([+minEl.value, +maxEl.value]).interpolator(makePalette(palEl.value));
+        // ---- Initial domain & color scale BEFORE drawing ----
+        // Use state values for first view
+        const stateVals = Object.values(stateValues).map(Number).filter(Number.isFinite);
+        if(stateVals.length){
+          minEl.value = Math.floor(d3.min(stateVals)*10)/10;
+          maxEl.value = Math.ceil(d3.max(stateVals)*10)/10;
+        }
+        colorScale = d3.scaleSequential()
+          .domain([+minEl.value, +maxEl.value])
+          .interpolator(makePalette(palEl.value));
+        drawLegend(); // legend can be shown immediately
 
         // Populate state filter (in settings)
         ALL_STATE_NAMES.forEach(s => {
@@ -756,7 +799,7 @@
           stateFilter.appendChild(opt);
         });
 
-        // Build the first time & install ResizeObserver (iOS-friendly)
+        // Build SVG and first render AFTER color scale exists
         rebuildVis();
         installResizeObserver();
 
@@ -768,27 +811,37 @@
         });
 
         // Top-level controls
-        levelEl.addEventListener('change', () => {
+        levelEl.addEventListener('change', async () => {
           currentLevel = levelEl.value;
           const isScatter = currentLevel === 'scatter';
           xVarWrap.classList.toggle('hidden', !isScatter);
           scatterSettings.classList.toggle('hidden', !isScatter);
-          setColorScaleDomainAuto(); recolor(); drawLegend();
-          if(isScatter){ drawScatter(false); }
+          await updateScaleAndLegend(true);
+          if(isScatter){ drawScatter(false); } else { rebuildVis(); }
         });
-        xVarSel.addEventListener('change', () => { if(currentLevel==='scatter'){ drawScatter(true); } });
+        xVarSel.addEventListener('change', async () => {
+          if(currentLevel==='scatter'){
+            await updateScaleAndLegend(true);
+            drawScatter(true);
+          }
+        });
 
         // Settings actions
-        applyBtn.addEventListener('click', () => {
-          recolor(); drawLegend();
+        applyBtn.addEventListener('click', async () => {
+          await updateScaleAndLegend(false);
           if(currentLevel==='scatter'){ drawScatter(true); }
         });
-        autoBtn.addEventListener('click', () => {
-          setColorScaleDomainAuto(); recolor(); drawLegend();
+        autoBtn.addEventListener('click', async () => {
+          await updateScaleAndLegend(true);
           if(currentLevel==='scatter'){ drawScatter(true); }
         });
         regToggle.addEventListener('change', () => { if(currentLevel==='scatter'){ drawScatter(false,true); } });
-        stateFilter.addEventListener('change', () => { if(currentLevel==='scatter'){ drawScatter(true); } });
+        stateFilter.addEventListener('change', async () => {
+          if(currentLevel==='scatter'){
+            await updateScaleAndLegend(true);
+            drawScatter(true);
+          }
+        });
         resetZoomBtn.addEventListener('click', () => { if(currentLevel==='scatter'){ resetScatterZoom(); } });
 
         // Sidebar interactions
@@ -937,7 +990,7 @@
     async function drawScatter(animateDots=false, onlyRegression=false){
       await extrasPromise;
 
-      // Clear and create a persistent root for scatter layers
+      // Clear and create root for scatter layers
       svgRoot.selectAll("*").remove();
       const root = svgRoot.append("g").attr("class","scatter-root");
 
@@ -988,7 +1041,7 @@
       const xOrig = d3.scaleLinear().domain([xExtent[0]-xPad, xExtent[1]+xPad]).range([0, innerW]);
       const yOrig = d3.scaleLinear().domain([yExtent[0]-yPad, yExtent[1]+yPad]).range([innerH, 0]);
 
-      // If we had a previous zoom, apply it to keep continuity
+      // If we had a previous zoom, apply it
       const prev = scatter;
       const prevTransform = prev && prev.zoomTransform ? prev.zoomTransform : d3.zoomIdentity;
       const x = prevTransform.rescaleX(xOrig);
@@ -1006,7 +1059,6 @@
       // Join
       let dots = plot.selectAll("circle").data(data, d=>d.fips);
 
-      // ENTER
       const enter = dots.enter().append("circle")
         .attr("cx", d => scatterPrev.has(d.fips) ? scatterPrev.get(d.fips).x : x(d.x))
         .attr("cy", d => scatterPrev.has(d.fips) ? scatterPrev.get(d.fips).y : y(d.le))
@@ -1017,7 +1069,6 @@
 
       dots = enter.merge(dots);
 
-      // UPDATE
       dots.interrupt();
       if(shouldAnimate){
         dots.transition().duration(TRANSITION_MS).ease(d3.easeLinear)
@@ -1028,13 +1079,10 @@
         dots.attr("cx", d=>x(d.x)).attr("cy", d=>y(d.le)).attr("r", d=>r(d.pop));
       }
 
-      // EXIT
       dots.exit().interrupt().remove();
 
-      // Interactions
       dots.on("mousemove", (event, d) => {
           tip.style.left = event.pageX + "px"; tip.style.top  = event.pageY + "px";
-          // Determine tooltip format for X
           let xv;
           const key = xVarSel.value;
           if(key==="pcIncome" || key==="mhi2016" || key==="fedSpending2009"){
@@ -1053,7 +1101,6 @@
         })
         .on("mouseleave", () => { tip.style.opacity = 0; });
 
-      // Regression (after axes finalized)
       let regLine=null, regLabel=null;
       if(!onlyRegression && regToggle.checked){
         const ctx = {data, x, y, innerW, innerH, plot, gX, gY, dots, regLine:null, regLabel:null};
@@ -1066,7 +1113,6 @@
         regLine = ctx.regLine; regLabel = ctx.regLabel;
       }
 
-      // Zoom/pan
       if(!zoomBehavior){
         zoomBehavior = d3.zoom()
           .scaleExtent([1, 20])
@@ -1091,7 +1137,6 @@
         root.select(".scatter-margins").call(zoomBehavior.transform, prevTransform);
       }
 
-      // Save positions for next transition
       scatterPrev.clear();
       dots.each(function(d){
         scatterPrev.set(d.fips, { x: +this.getAttribute("cx"), y: +this.getAttribute("cy"), r: +this.getAttribute("r") });
@@ -1101,11 +1146,12 @@
     }
 
     // ---------- Recolor / redraw ----------
-    function recolor(){
+    async function recolor(){
       colorScale = d3.scaleSequential()
         .domain([+minEl.value, +maxEl.value])
         .interpolator(makePalette(palEl.value));
 
+      drawLegend();
       if(currentLevel === 'state'){
         drawStates(statesTopo);
       }else if(currentLevel === 'county'){
@@ -1114,7 +1160,7 @@
         if(scatter && scatter.dots){
           scatter.dots.attr("fill", d=>colorScale(d.le));
         }else{
-          drawScatter(false);
+          await drawScatter(false);
         }
       }
     }
